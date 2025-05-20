@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+    background: linear-gradient(45deg, #8ecae6, #219ebc);
+    font-family: 'Press Start 2P', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.nintendo-clock {
+    background: #fff;
+    border: 8px solid #023047;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 0 20px #219ebc;
+    text-align: center;
+}
+
+.screen {
+    background: #000;
+    color: #00ff00;
+    padding: 1.5rem;
+    border: 4px inset #333;
+}
+
+.pixel-time {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.pixel-date {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin: 0 10px;
+}
+
+.btn.red {
+    background: #ff595e;
+}
+
+.btn.blue {
+    background: #1982c4;
+}
