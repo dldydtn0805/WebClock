@@ -464,6 +464,11 @@ textarea:focus,
     justify-content: center;
 }
 
+.todo-card {
+    display: flex;
+    flex-direction: column;
+}
+
 .weather-panel {
     border: 1px solid var(--panel-border);
     border-radius: 22px;
@@ -566,6 +571,21 @@ textarea:focus,
     overflow-y: auto;
     overscroll-behavior: contain;
     padding-right: 6px;
+}
+
+.music-panel,
+.todo-card,
+.music-library-list,
+.todo-list {
+    min-height: 0;
+}
+
+@media (min-width: 921px) {
+    .music-library-list,
+    .todo-list {
+        flex: 1 1 auto;
+        max-height: none;
+    }
 }
 
 .music-library-list::-webkit-scrollbar,

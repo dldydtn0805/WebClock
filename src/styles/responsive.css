@@ -19,10 +19,6 @@
 }
 
 @media (max-width: 560px) {
-    :root {
-        --list-scroll-max-height: min(300px, 36vh);
-    }
-
     .clock-panel,
     .dashboard-panel,
     .music-panel {

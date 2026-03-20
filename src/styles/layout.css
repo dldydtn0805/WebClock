@@ -111,3 +111,35 @@
     border: 0;
     box-shadow: none;
 }
+
+@media (min-width: 921px) {
+    body {
+        min-height: 100dvh;
+        overflow: hidden;
+    }
+
+    .page-shell {
+        height: 100dvh;
+    }
+
+    .desk-app {
+        height: 100%;
+        min-height: 0;
+    }
+
+    .dashboard-panel,
+    .music-panel,
+    .bottom-row {
+        min-height: 0;
+    }
+
+    .dashboard-panel,
+    .music-panel {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .dashboard-panel {
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+}
