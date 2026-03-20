@@ -1,0 +1,113 @@
+.page-shell {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    width: min(930px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 26px 0 36px;
+}
+
+.desk-app {
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(360px, 440px) minmax(0, 1fr);
+    gap: var(--section-gap);
+    align-items: stretch;
+}
+
+.dashboard-panel,
+.clock-panel,
+.music-panel {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    backdrop-filter: saturate(160%) blur(24px);
+    -webkit-backdrop-filter: saturate(160%) blur(24px);
+    border-radius: 36px;
+    box-shadow: var(--shadow);
+}
+
+.dashboard-panel,
+.clock-panel,
+.music-panel {
+    padding: 32px;
+}
+
+.top-row,
+.bottom-row,
+.clock-topline,
+.clock-footer,
+.card-head,
+.buttons,
+.todo-form,
+.music-form,
+.music-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.clock-topline,
+.clock-footer,
+.card-head {
+    align-items: center;
+    justify-content: space-between;
+}
+
+.clock-footer {
+    align-items: center;
+}
+
+.buttons {
+    justify-content: center;
+    align-items: center;
+}
+
+.clock-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.dashboard-panel {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 24px;
+}
+
+.top-row,
+.bottom-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.top-row {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.music-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.focus-strip {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.todo-form,
+.music-form,
+.music-actions {
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.focus-card {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}

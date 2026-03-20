@@ -2,21 +2,141 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="index.css">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="src/styles/main.css">
+    <title>Desk Clock Planner</title>
 </head>
 <body>
-    <div class="nintendo-clock">
-        <div class="screen">
-            <div class="pixel-time">12:34:56</div>
-            <div class="pixel-date">Mon, May 20</div>
-        </div>
-        <div class="buttons">
-            <div class="btn red"></div>
-            <div class="btn blue"></div>
-        </div>
+    <div class="page-shell">
+        <main class="desk-app">
+            <section class="card music-card music-panel">
+                <div class="card-head">
+                    <h2 class="music-title">No track loaded</h2>
+                    <span class="music-badge">YouTube Loop</span>
+                </div>
+                <form class="music-form" novalidate>
+                    <label class="sr-only" for="music-url-input">YouTube URL</label>
+                    <input
+                        id="music-url-input"
+                        class="music-url-input"
+                        type="text"
+                        inputmode="text"
+                        autocapitalize="off"
+                        autocorrect="off"
+                        spellcheck="false"
+                        placeholder="Paste a YouTube link"
+                    >
+                    <button type="button" class="music-load-btn">Load</button>
+                </form>
+                <div class="music-preview">
+                    <img
+                        class="music-thumbnail"
+                        src="https://i.ytimg.com/vi_webp/dQw4w9WgXcQ/hqdefault.webp"
+                        alt=""
+                        hidden
+                    >
+                    <div class="music-preview-copy">
+                        <p class="music-current-label">Now queued</p>
+                        <p class="music-current-meta">Save favorite YouTube links and switch between them anytime.</p>
+                    </div>
+                </div>
+                <p class="music-status" aria-live="polite">Paste a YouTube link to start a loopable background track.</p>
+                <div class="music-actions">
+                    <button type="button" class="timer-btn primary" data-music-action="play">Play</button>
+                    <button type="button" class="timer-btn" data-music-action="pause">Pause</button>
+                    <button type="button" class="timer-btn ghost" data-music-action="stop">Stop</button>
+                    <label class="music-loop-toggle">
+                        <input id="music-loop-input" type="checkbox" checked>
+                        <span>Loop playlist</span>
+                    </label>
+                </div>
+                <div class="music-volume-row">
+                    <label class="music-volume-label" for="music-volume-input">Volume</label>
+                    <input id="music-volume-input" class="music-volume-input" type="range" min="0" max="100" step="1" value="70">
+                    <span class="music-volume-value">70%</span>
+                </div>
+                <div class="music-seek-row">
+                    <div class="music-seek-times">
+                        <span class="music-current-time">0:00</span>
+                        <span class="music-duration">0:00</span>
+                    </div>
+                    <input id="music-seek-input" class="music-seek-input" type="range" min="0" max="1000" step="1" value="0">
+                </div>
+                <div class="music-library-head">
+                    <p class="card-label">Saved Tracks</p>
+                    <span class="music-library-count">0 saved</span>
+                </div>
+                <ul class="music-library-list"></ul>
+                <p class="music-library-empty">No saved tracks yet. Load your first YouTube link to build a playlist.</p>
+                <div class="music-player-slot" aria-hidden="true">
+                    <div id="youtube-player"></div>
+                </div>
+            </section>
+
+            <section class="dashboard-panel">
+                <div class="top-row">
+                    <section class="clock-panel">
+                        <div class="clock-shell">
+                            <div class="clock-screen">
+                                <div class="clock-topline">
+                                    <span class="status-dot"></span>
+                                    <span class="status-label">Focus</span>
+                                </div>
+                                <div class="pixel-time">12:34</div>
+                                <div class="pixel-date">Thu, Mar 20</div>
+                                <div class="clock-footer">
+                                    <div>
+                                        <p class="greeting-text">Have a steady day.</p>
+                                    </div>
+                                    <div>
+                                        <p class="completed-count">0 / 0</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="buttons">
+                                <div class="btn coral"></div>
+                                <div class="btn navy"></div>
+                            </div>
+                        </div>
+                        <div class="focus-strip">
+                            <section class="focus-card">
+                                <input id="focus-input" class="focus-input" type="text" maxlength="80" placeholder="Today's main focus">
+                            </section>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="bottom-row">
+                    <section class="card todo-card">
+                        <div class="card-head">
+                            <h2>Tasks</h2>
+                            <span class="task-count">0 items</span>
+                        </div>
+                        <form class="todo-form">
+                            <input id="todo-input" type="text" maxlength="120" placeholder="Add a task for today">
+                            <button type="submit">Add</button>
+                        </form>
+                        <ul class="todo-list"></ul>
+                        <p class="empty-state">No tasks yet. Start with one clear next step.</p>
+                    </section>
+
+                    <section class="card weather-card">
+                        <div class="card-head">
+                            <h2>Today's Weather</h2>
+                        </div>
+                        <div class="weather-panel">
+                            <p id="weather-summary" class="weather-summary" aria-live="polite">Loading current weather...</p>
+                            <p id="weather-meta" class="weather-meta">Using your current location</p>
+                            <button type="button" class="weather-refresh-btn timer-btn ghost">
+                                Refresh
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </main>
     </div>
 
-<script src="index.js"></script>
+    <script type="module" src="src/js/app.js"></script>
 </body>
 </html>

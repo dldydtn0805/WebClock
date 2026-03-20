@@ -1,0 +1,634 @@
+.eyebrow,
+.footer-label,
+.card-label,
+.planner-summary,
+.task-count,
+.autosave-label,
+.status-label {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.clock-shell {
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.1)),
+        linear-gradient(180deg, var(--surface-tint), rgba(255, 255, 255, 0.18));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.45),
+        0 14px 32px rgba(15, 23, 42, 0.06);
+}
+
+.clock-screen {
+    display: flex;
+    flex-direction: column;
+    padding: 34px;
+    border-radius: 34px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.18)),
+        var(--screen);
+    color: var(--screen-soft);
+    border: 1px solid var(--panel-border);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.clock-topline {
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.status-dot {
+    flex: 0 0 auto;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0;
+    background: #30d158;
+    box-shadow: 0 0 0 6px rgba(48, 209, 88, 0.12);
+}
+
+.pixel-time,
+.pixel-date {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', sans-serif;
+    font-variant-numeric: tabular-nums;
+}
+
+.pixel-time {
+    margin: 34px 0 12px;
+    max-width: 100%;
+    font-size: clamp(3.4rem, 6vw, 5.8rem);
+    font-weight: 700;
+    letter-spacing: -0.07em;
+    line-height: 0.92;
+    white-space: nowrap;
+    text-align: left;
+    color: var(--screen-glow);
+}
+
+.pixel-date {
+    font-size: 0.98rem;
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+.clock-footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--panel-border);
+}
+
+.clock-footer > div:last-child {
+    margin-left: auto;
+    text-align: right;
+}
+
+.greeting-text,
+.completed-count,
+.card-head h2 {
+    margin: 6px 0 0;
+}
+
+.greeting-text,
+.completed-count {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.card-head h2 {
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
+.btn {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.btn.coral {
+    background: #ff5f57;
+}
+
+.btn.navy {
+    background: #28c840;
+}
+
+.card {
+    background: var(--panel-strong);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--card-radius);
+    padding: var(--card-padding);
+    box-shadow: var(--shadow-soft);
+}
+
+
+.music-card {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at bottom left, rgba(255, 159, 10, 0.15), transparent 34%),
+        var(--panel-strong);
+}
+
+.music-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+}
+
+.music-badge {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 159, 10, 0.12);
+    color: #c46a00;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.music-form {
+    margin-top: 22px;
+}
+
+.music-preview {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+    padding: 16px;
+    border-radius: 24px;
+    background: rgba(17, 24, 39, 0.035);
+    border: 1px solid rgba(17, 24, 39, 0.05);
+}
+
+.music-thumbnail {
+    width: 120px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 16px;
+    display: block;
+    background: rgba(15, 23, 42, 0.08);
+}
+
+.music-current-label,
+.music-current-meta {
+    margin: 0;
+}
+
+.music-current-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #c46a00;
+}
+
+.music-current-meta {
+    margin-top: 8px;
+    line-height: 1.6;
+    color: var(--muted);
+}
+
+.music-url-input {
+    flex: 1 1 280px;
+}
+
+.music-form button {
+    border: 0;
+    border-radius: 999px;
+    background: #111827;
+    color: #fff;
+    min-height: var(--control-height);
+    padding: 0 24px;
+    font-weight: 600;
+    transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    box-shadow: 0 10px 24px rgba(17, 24, 39, 0.14);
+}
+
+.music-form button:hover {
+    background: #1f2937;
+    transform: translateY(-1px);
+}
+
+.music-status {
+    margin: 14px 0 0;
+    color: var(--muted);
+    line-height: 1.5;
+    font-size: 0.92rem;
+}
+
+.music-actions {
+    margin-top: 22px;
+    align-items: center;
+}
+
+.music-volume-row,
+.music-library-head,
+.music-seek-times {
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.music-volume-label,
+.music-library-count {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.music-volume-input {
+    flex: 1 1 auto;
+    accent-color: var(--accent);
+}
+
+.music-seek-row {
+    margin-top: 22px;
+}
+
+.music-seek-times {
+    margin-top: 0;
+    justify-content: space-between;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.music-seek-input {
+    width: 100%;
+    margin-top: 10px;
+    accent-color: #c46a00;
+}
+
+.music-volume-value {
+    min-width: 48px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.music-loop-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 46px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.music-loop-toggle input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--accent);
+}
+
+.music-library-head {
+    justify-content: space-between;
+}
+
+.music-library-list {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: var(--list-scroll-max-height);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 6px;
+}
+
+.music-library-item {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px;
+    border-radius: 22px;
+    background: var(--input-bg);
+    border: 1px solid rgba(15, 23, 42, 0.045);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.music-library-item.active {
+    border-color: rgba(255, 159, 10, 0.35);
+    box-shadow: inset 0 0 0 1px rgba(255, 159, 10, 0.2);
+}
+
+.music-library-thumb {
+    width: 72px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+    background: rgba(15, 23, 42, 0.08);
+}
+
+.music-library-info {
+    min-width: 0;
+}
+
+.music-library-title,
+.music-library-url {
+    margin: 0;
+}
+
+.music-library-title {
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.music-library-url {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.music-library-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.music-library-btn {
+    border: 1px solid var(--panel-border);
+    background: rgba(255, 255, 255, 0.82);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 10px 14px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.music-library-btn:hover {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.96);
+    transform: translateY(-1px);
+}
+
+.music-library-empty {
+    margin: 14px 0 0;
+    color: var(--muted);
+}
+
+.music-player-slot {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.focus-input,
+.todo-form input,
+textarea,
+.music-url-input,
+.timer-btn,
+.todo-form button,
+.music-form button,
+.music-library-btn {
+    font: inherit;
+}
+
+.focus-input,
+.todo-form input,
+textarea,
+.music-url-input {
+    width: 100%;
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    background: var(--input-bg);
+    min-height: var(--control-height);
+    padding: 14px 18px;
+    color: var(--text);
+    margin-top: 0;
+    transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.focus-input:focus,
+.todo-form input:focus,
+textarea:focus,
+.music-url-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.14);
+}
+
+.todo-form {
+    margin-top: 18px;
+    align-items: stretch;
+}
+
+.weather-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.weather-panel {
+    border: 1px solid var(--panel-border);
+    border-radius: 22px;
+    background: var(--input-bg);
+    padding: 18px 20px;
+    display: grid;
+    gap: 12px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.weather-summary,
+.weather-meta {
+    margin: 0;
+}
+
+.weather-summary {
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 600;
+}
+
+.weather-summary[data-state="loading"] {
+    color: var(--text-soft);
+}
+
+.weather-summary[data-state="error"] {
+    color: #b54747;
+}
+
+.weather-meta {
+    color: var(--text-soft);
+    font-size: 0.9rem;
+}
+
+.weather-refresh-btn {
+    justify-self: start;
+}
+
+.todo-form button,
+.timer-btn {
+    cursor: pointer;
+}
+
+.todo-form button {
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    min-height: var(--control-height);
+    padding: 0 24px;
+    font-weight: 600;
+    transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    box-shadow: 0 10px 24px rgba(0, 113, 227, 0.2);
+}
+
+.todo-form button:hover {
+    background: var(--accent-deep);
+    transform: translateY(-1px);
+}
+
+.timer-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--panel-border);
+    border-radius: 999px;
+    background: var(--input-bg);
+    color: var(--text);
+    min-height: 46px;
+    padding: 10px 18px;
+    font-weight: 600;
+    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.timer-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 12px 28px rgba(0, 113, 227, 0.22);
+}
+
+.timer-btn.ghost {
+    background: rgba(255, 255, 255, 0.24);
+}
+
+.timer-btn:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+
+.todo-list {
+    list-style: none;
+    margin: 18px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: var(--list-scroll-max-height);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 6px;
+}
+
+.music-library-list::-webkit-scrollbar,
+.todo-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.music-library-list::-webkit-scrollbar-thumb,
+.todo-list::-webkit-scrollbar-thumb {
+    background: rgba(110, 110, 115, 0.38);
+    border-radius: 999px;
+}
+
+.music-library-list::-webkit-scrollbar-track,
+.todo-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.todo-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 17px 18px;
+    border-radius: 22px;
+    background: var(--input-bg);
+    border: 1px solid rgba(15, 23, 42, 0.045);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.todo-item.done .todo-text {
+    text-decoration: line-through;
+    color: var(--muted);
+}
+
+.todo-check {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--accent);
+}
+
+.todo-text {
+    word-break: break-word;
+    font-weight: 500;
+}
+
+.delete-btn {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    cursor: pointer;
+    font-weight: 600;
+    justify-self: end;
+}
+
+.empty-state {
+    margin: 16px 0 0;
+    color: var(--muted);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 180px;
+}
