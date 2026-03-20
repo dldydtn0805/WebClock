@@ -68,6 +68,13 @@
     gap: 22px;
 }
 
+.clock-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    height: 100%;
+}
+
 .dashboard-panel {
     display: grid;
     grid-template-rows: auto auto;
@@ -83,6 +90,37 @@
 
 .top-row {
     grid-template-columns: minmax(0, 1fr);
+}
+
+.top-row > .weather-card {
+    min-height: 0;
+}
+
+.bottom-row > .clock-panel {
+    min-width: 0;
+    gap: 18px;
+}
+
+.bottom-row > .clock-panel .clock-shell {
+    padding: 16px;
+    border-radius: 32px;
+}
+
+.bottom-row > .clock-panel .clock-screen {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 28px;
+    border-radius: 28px;
+}
+
+.bottom-row > .clock-panel .pixel-time {
+    margin: 24px 0 10px;
+    font-size: clamp(2.8rem, 4.8vw, 4.5rem);
+}
+
+.bottom-row > .clock-panel .clock-footer {
+    margin-top: 24px;
+    padding-top: 16px;
 }
 
 .music-panel {

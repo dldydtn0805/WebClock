@@ -75,6 +75,63 @@
 
             <section class="dashboard-panel">
                 <div class="top-row">
+                    <section class="card weather-card">
+                        <div class="card-head">
+                            <h2>Today's Weather</h2>
+                        </div>
+                        <div class="weather-panel">
+                            <section class="weather-game" aria-label="Weather dino mini game">
+                                <div class="weather-game-head">
+                                    <div>
+                                        <p class="weather-game-title">Weather Dino Run</p>
+                                        <p id="weather-game-status" class="weather-game-status">Checking the sky for your dinosaur...</p>
+                                    </div>
+                                    <div class="weather-game-actions">
+                                        <button type="button" class="weather-refresh-btn timer-btn ghost">
+                                            Refresh
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="weather-game-toggle timer-btn ghost"
+                                            aria-label="Pause weather game"
+                                        >
+                                            Pause
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="weather-game-stage">
+                                    <canvas
+                                        id="weather-game-canvas"
+                                        class="weather-game-canvas"
+                                        width="320"
+                                        height="150"
+                                        aria-label="A tiny dinosaur runner game that matches the current weather"
+                                    ></canvas>
+                                </div>
+                                <p id="weather-summary" class="weather-summary sr-only" aria-live="polite">Loading current weather...</p>
+                                <p id="weather-meta" class="weather-meta sr-only">Using your current location</p>
+                                <p id="weather-game-hint" class="weather-game-hint">
+                                    Tap the game or press space to jump. The dinosaur changes with the weather.
+                                </p>
+                            </section>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="bottom-row">
+                    <section class="card todo-card">
+                        <div class="card-head">
+                            <h2>Tasks</h2>
+                            <span class="task-count">0 items</span>
+                        </div>
+                        <form class="todo-form">
+                            <input id="todo-input" type="text" maxlength="120" placeholder="Add a task for today">
+                            <button type="submit">Add</button>
+                        </form>
+                        <ul class="todo-list"></ul>
+                        <p class="empty-state">No tasks yet. Start with one clear next step.</p>
+                    </section>
+
                     <section class="clock-panel">
                         <div class="clock-shell">
                             <div class="clock-screen">
@@ -102,34 +159,6 @@
                             <section class="focus-card">
                                 <input id="focus-input" class="focus-input" type="text" maxlength="80" placeholder="Today's main focus">
                             </section>
-                        </div>
-                    </section>
-                </div>
-
-                <div class="bottom-row">
-                    <section class="card todo-card">
-                        <div class="card-head">
-                            <h2>Tasks</h2>
-                            <span class="task-count">0 items</span>
-                        </div>
-                        <form class="todo-form">
-                            <input id="todo-input" type="text" maxlength="120" placeholder="Add a task for today">
-                            <button type="submit">Add</button>
-                        </form>
-                        <ul class="todo-list"></ul>
-                        <p class="empty-state">No tasks yet. Start with one clear next step.</p>
-                    </section>
-
-                    <section class="card weather-card">
-                        <div class="card-head">
-                            <h2>Today's Weather</h2>
-                        </div>
-                        <div class="weather-panel">
-                            <p id="weather-summary" class="weather-summary" aria-live="polite">Loading current weather...</p>
-                            <p id="weather-meta" class="weather-meta">Using your current location</p>
-                            <button type="button" class="weather-refresh-btn timer-btn ghost">
-                                Refresh
-                            </button>
                         </div>
                     </section>
                 </div>

@@ -25,6 +25,9 @@ export function createDefaultState() {
     return {
         todos: [],
         weather: '',
+        weatherCode: null,
+        weatherTemperature: null,
+        weatherIsDay: true,
         focus: '',
         pomodoro: createDefaultPomodoro(),
         music: createDefaultMusic()
@@ -43,6 +46,13 @@ export function loadState() {
         return {
             todos: Array.isArray(saved?.todos) ? saved.todos : defaultState.todos,
             weather: typeof saved?.weather === 'string' ? saved.weather : defaultState.weather,
+            weatherCode: Number.isInteger(saved?.weatherCode) ? saved.weatherCode : defaultState.weatherCode,
+            weatherTemperature: Number.isFinite(saved?.weatherTemperature)
+                ? saved.weatherTemperature
+                : defaultState.weatherTemperature,
+            weatherIsDay: typeof saved?.weatherIsDay === 'boolean'
+                ? saved.weatherIsDay
+                : defaultState.weatherIsDay,
             focus: typeof saved?.focus === 'string' ? saved.focus : defaultState.focus,
             pomodoro: {
                 mode: isValidPomodoroMode(saved?.pomodoro?.mode)

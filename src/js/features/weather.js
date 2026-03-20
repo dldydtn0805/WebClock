@@ -1,3 +1,5 @@
+import { createWeatherRunner } from './weatherRunner.js';
+
 const WEATHER_CODES = {
     0: 'Clear',
     1: 'Mostly clear',
@@ -41,12 +43,17 @@ function formatTemperature(value) {
     return `${Math.round(value)}C`;
 }
 
-function renderWeather(elements, { summary, meta, isError = false, isLoading = false }) {
+function getNumericTemperature(value) {
+    return Number.isFinite(value) ? value : null;
+}
+
+function renderWeather(elements, weatherRunner, { summary, meta, isError = false, isLoading = false }) {
     elements.weatherSummary.textContent = summary;
     elements.weatherMeta.textContent = meta;
     elements.weatherSummary.dataset.state = isError ? 'error' : (isLoading ? 'loading' : 'ready');
     elements.weatherRefreshButton.disabled = isLoading;
     elements.weatherRefreshButton.textContent = isLoading ? 'Refreshing...' : 'Refresh';
+    weatherRunner.setWeatherText(summary, meta, { isError, isLoading });
 }
 
 function getWeatherErrorMeta(error) {
@@ -111,16 +118,44 @@ async function fetchWeather(latitude, longitude) {
 }
 
 export function createWeatherFeature({ state, saveState, elements }) {
+    let weatherRunner = {
+        setWeather() {},
+        setWeatherText() {},
+        setLoading() {},
+        setError() {}
+    };
+
+    try {
+        weatherRunner = createWeatherRunner({
+            canvas: elements.weatherGameCanvas,
+            statusElement: elements.weatherGameStatus,
+            hintElement: elements.weatherGameHint,
+            toggleButton: elements.weatherGameToggleButton
+        });
+    } catch (error) {
+        if (elements.weatherGameStatus) {
+            elements.weatherGameStatus.textContent = 'Weather Dino unavailable';
+        }
+
+        if (elements.weatherGameHint) {
+            elements.weatherGameHint.textContent = 'Your browser skipped the mini game, but weather updates still work.';
+        }
+
+        console.error('Weather runner failed to initialize.', error);
+    }
+
     function hydrate() {
+        weatherRunner.setWeather(state.weatherCode, state.weatherIsDay, state.weatherTemperature);
+
         if (state.weather) {
-            renderWeather(elements, {
+            renderWeather(elements, weatherRunner, {
                 summary: state.weather,
                 meta: 'Last saved weather snapshot'
             });
             return;
         }
 
-        renderWeather(elements, {
+        renderWeather(elements, weatherRunner, {
             summary: 'Loading current weather...',
             meta: 'Using your current location',
             isLoading: true
@@ -128,7 +163,7 @@ export function createWeatherFeature({ state, saveState, elements }) {
     }
 
     async function refreshWeather() {
-        renderWeather(elements, {
+        renderWeather(elements, weatherRunner, {
             summary: 'Loading current weather...',
             meta: 'Using your current location',
             isLoading: true
@@ -149,14 +184,22 @@ export function createWeatherFeature({ state, saveState, elements }) {
             ].join(' · ');
 
             state.weather = summary;
+            state.weatherCode = weather.weather_code;
+            state.weatherIsDay = weather.is_day === 1;
+            state.weatherTemperature = getNumericTemperature(weather.temperature_2m);
             saveState();
+            weatherRunner.setWeather(
+                weather.weather_code,
+                weather.is_day === 1,
+                state.weatherTemperature
+            );
 
-            renderWeather(elements, {
+            renderWeather(elements, weatherRunner, {
                 summary,
                 meta: 'Auto-updated from your current location'
             });
         } catch (error) {
-            renderWeather(elements, {
+            renderWeather(elements, weatherRunner, {
                 summary: state.weather || 'Unable to load weather automatically.',
                 meta: getWeatherErrorMeta(error),
                 isError: true
