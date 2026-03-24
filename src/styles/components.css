@@ -43,6 +43,15 @@
     gap: 10px;
 }
 
+.clock-datetime {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin: 34px 0 12px;
+    text-align: center;
+}
+
 .status-dot {
     flex: 0 0 auto;
     width: 8px;
@@ -56,23 +65,24 @@
 
 .pixel-time,
 .pixel-date {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', sans-serif;
     font-variant-numeric: tabular-nums;
 }
 
 .pixel-time {
-    margin: 34px 0 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', sans-serif;
+    margin: 0;
     max-width: 100%;
     font-size: clamp(3.4rem, 6vw, 5.8rem);
     font-weight: 700;
     letter-spacing: -0.07em;
     line-height: 0.92;
     white-space: nowrap;
-    text-align: left;
+    text-align: center;
     color: var(--screen-glow);
 }
 
 .pixel-date {
+    margin: 0;
     font-size: 0.98rem;
     font-weight: 500;
     line-height: 1.6;
@@ -89,27 +99,48 @@
     min-width: 0;
 }
 
-.greeting-text,
-.clock-caption,
 .card-head h2 {
     margin: 6px 0 0;
-}
-
-.greeting-text,
-.clock-caption {
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-}
-
-.clock-caption {
-    color: var(--muted);
-    font-size: 0.9rem;
 }
 
 .card-head h2 {
     font-size: 1.25rem;
     line-height: 1.2;
+}
+
+.clock-marquee {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.clock-marquee-track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    animation: clock-marquee-slide 18s linear infinite;
+}
+
+.clock-marquee-text {
+    flex: 0 0 auto;
+    padding-right: 44px;
+    white-space: nowrap;
+    color: var(--muted);
+    font-size: 0.94rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+@keyframes clock-marquee-slide {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
 }
 
 .btn {
@@ -179,11 +210,7 @@ body.night-mode .clock-footer {
     border-top-color: rgba(255, 255, 255, 0.08);
 }
 
-body.night-mode .greeting-text {
-    color: #f5f5f7;
-}
-
-body.night-mode .clock-caption {
+body.night-mode .clock-marquee-text {
     color: rgba(245, 245, 247, 0.72);
 }
 
@@ -305,7 +332,19 @@ body.night-mode .btn {
 
 .music-actions {
     margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    border-radius: 24px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(245, 246, 248, 0.9));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.94),
+        0 8px 18px rgba(15, 23, 42, 0.03);
 }
 
 .music-volume-row,
@@ -355,21 +394,139 @@ body.night-mode .btn {
     color: var(--text);
 }
 
-.music-loop-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 46px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text);
+.music-control-btn {
+    width: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    padding: 0;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(15, 23, 42, 0.08);
+    color: #1d1d1f;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.94),
+        0 8px 16px rgba(15, 23, 42, 0.035);
 }
 
-.music-loop-toggle input {
-    width: 18px;
-    height: 18px;
-    margin: 0;
-    accent-color: var(--accent);
+.music-control-btn:hover {
+    background: rgba(236, 238, 241, 0.98);
+    border-color: rgba(15, 23, 42, 0.08);
+    color: #1d1d1f;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        0 10px 18px rgba(15, 23, 42, 0.045);
+}
+
+.music-control-glyph {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    color: currentColor;
+}
+
+.music-control-play .music-control-glyph {
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 13px solid currentColor;
+}
+
+.music-control-pause .music-control-glyph {
+    width: 13px;
+    height: 15px;
+    background:
+        linear-gradient(
+            90deg,
+            currentColor 0 4px,
+            transparent 4px 8px,
+            currentColor 8px 12px,
+            transparent 12px 100%
+        );
+}
+
+.music-control-stop .music-control-glyph {
+    width: 13px;
+    height: 13px;
+    background: currentColor;
+    border-radius: 3px;
+}
+
+.music-control-loop .music-control-glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.music-control-loop.is-active {
+    background: rgba(236, 238, 241, 0.98);
+    border-color: rgba(15, 23, 42, 0.14);
+    color: #1d1d1f;
+    box-shadow:
+        inset 0 0 0 1px rgba(15, 23, 42, 0.04),
+        0 10px 18px rgba(15, 23, 42, 0.04);
+}
+
+.music-control-loop {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.music-control-loop.is-active:hover {
+    background: rgba(228, 230, 233, 0.98);
+    border-color: rgba(15, 23, 42, 0.14);
+    box-shadow:
+        inset 0 0 0 1px rgba(15, 23, 42, 0.04),
+        0 10px 18px rgba(15, 23, 42, 0.05);
+}
+
+.music-actions .music-control-btn,
+.music-actions .music-control-btn.primary,
+.music-actions .music-control-btn.ghost {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(15, 23, 42, 0.08);
+    color: #1d1d1f;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.94),
+        0 8px 16px rgba(15, 23, 42, 0.035);
+}
+
+.music-actions .music-control-btn:hover,
+.music-actions .music-control-btn.primary:hover,
+.music-actions .music-control-btn.ghost:hover {
+    background: rgba(236, 238, 241, 0.98);
+    border-color: rgba(15, 23, 42, 0.08);
+    color: #1d1d1f;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        0 10px 18px rgba(15, 23, 42, 0.045);
+}
+
+.music-actions .music-control-loop.is-active {
+    background: rgba(236, 238, 241, 0.98);
+    border-color: rgba(15, 23, 42, 0.14);
+    color: #1d1d1f;
+    box-shadow:
+        inset 0 0 0 1px rgba(15, 23, 42, 0.04),
+        0 10px 18px rgba(15, 23, 42, 0.04);
+}
+
+.music-actions .music-control-loop.is-active:hover {
+    background: rgba(228, 230, 233, 0.98);
+    border-color: rgba(15, 23, 42, 0.14);
+    color: #1d1d1f;
+    box-shadow:
+        inset 0 0 0 1px rgba(15, 23, 42, 0.04),
+        0 10px 18px rgba(15, 23, 42, 0.05);
 }
 
 .music-library-head {
@@ -391,13 +548,24 @@ body.night-mode .btn {
 
 .music-library-item {
     display: grid;
-    grid-template-columns: 72px minmax(0, 1fr) auto;
+    grid-template-columns: 24px 72px minmax(0, 1fr) auto;
     gap: 16px;
     align-items: center;
     padding: 14px;
     border-radius: 22px;
     background: var(--input-bg);
     border: 1px solid rgba(15, 23, 42, 0.045);
+    cursor: grab;
+    position: relative;
+    touch-action: none;
+    user-select: none;
+    transition:
+        transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 180ms ease,
+        box-shadow 240ms ease,
+        opacity 180ms ease,
+        background-color 180ms ease;
+    will-change: transform;
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.78),
         0 8px 18px rgba(15, 23, 42, 0.03);
@@ -408,6 +576,70 @@ body.night-mode .btn {
     box-shadow:
         inset 0 0 0 1px rgba(0, 113, 227, 0.12),
         0 10px 22px rgba(0, 113, 227, 0.06);
+}
+
+.music-library-item.is-dragging {
+    opacity: 0.68;
+    transform: scale(0.985);
+    cursor: grabbing;
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 113, 227, 0.14),
+        0 16px 30px rgba(15, 23, 42, 0.08);
+}
+
+.music-library-item.is-drag-origin {
+    opacity: 0.18;
+    transform: scale(0.98);
+}
+
+.music-library-drag-proxy {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    margin: 0;
+}
+
+.music-library-item.is-drop-target {
+    border-color: rgba(110, 110, 115, 0.18);
+    background:
+        linear-gradient(180deg, rgba(110, 110, 115, 0.05), rgba(110, 110, 115, 0.02)),
+        var(--input-bg);
+}
+
+.music-library-item.is-drop-target.drop-before {
+    box-shadow:
+        inset 0 3px 0 rgba(110, 110, 115, 0.24),
+        inset 0 0 0 1px rgba(110, 110, 115, 0.1),
+        0 10px 22px rgba(15, 23, 42, 0.04);
+}
+
+.music-library-item.is-drop-target.drop-after {
+    box-shadow:
+        inset 0 -3px 0 rgba(110, 110, 115, 0.24),
+        inset 0 0 0 1px rgba(110, 110, 115, 0.1),
+        0 10px 22px rgba(15, 23, 42, 0.04);
+}
+
+.music-library-handle {
+    width: 24px;
+    height: 44px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    touch-action: none;
+    background:
+        radial-gradient(circle, rgba(110, 110, 115, 0.46) 1.3px, transparent 1.6px) center / 8px 8px repeat-y,
+        rgba(255, 255, 255, 0.74);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+    user-select: none;
+}
+
+.music-library-handle:active,
+.music-library-item.is-dragging .music-library-handle {
+    cursor: grabbing;
 }
 
 .music-library-thumb {
@@ -455,18 +687,75 @@ body.night-mode .btn {
     background: rgba(255, 255, 255, 0.96);
     color: var(--text);
     border-radius: 999px;
-    padding: 10px 14px;
+    padding: 8px 12px;
     font: inherit;
+    font-size: 0.74rem;
     font-weight: 600;
     cursor: pointer;
-    transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+    position: relative;
+    transition:
+        color 220ms ease 40ms,
+        border-color 160ms ease,
+        background-color 160ms ease,
+        transform 160ms ease,
+        box-shadow 160ms ease;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
 }
 
 .music-library-btn:hover {
-    border-color: var(--accent);
-    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(15, 23, 42, 0.1);
+    background: rgba(244, 245, 247, 0.98);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        0 4px 12px rgba(15, 23, 42, 0.04);
     transform: translateY(-1px);
+}
+
+.music-library-btn.is-delete-btn::after {
+    content: attr(data-hover-label);
+    position: absolute;
+    inset: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    opacity: 0;
+    transition: opacity 90ms ease;
+}
+
+.music-library-btn.is-delete-btn:hover {
+    transition-duration: 90ms, 160ms, 160ms, 160ms, 160ms;
+    transition-delay: 0ms, 0ms, 0ms, 0ms, 0ms;
+    color: transparent;
+}
+
+.music-library-btn.is-delete-btn:hover::after {
+    transition: opacity 260ms ease;
+    opacity: 1;
+}
+
+.music-library-btn.is-play-btn::after {
+    content: attr(data-hover-label);
+    position: absolute;
+    inset: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #1d1d1f;
+    font-size: 0.8rem;
+    opacity: 0;
+    transition: opacity 90ms ease;
+}
+
+.music-library-btn.is-play-btn:hover {
+    transition-duration: 90ms, 160ms, 160ms, 160ms, 160ms;
+    transition-delay: 0ms, 0ms, 0ms, 0ms, 0ms;
+    color: transparent;
+}
+
+.music-library-btn.is-play-btn:hover::after {
+    transition: opacity 260ms ease;
+    opacity: 1;
 }
 
 .music-library-empty {
@@ -499,8 +788,7 @@ body.night-mode .btn {
 textarea,
 .music-url-input,
 .timer-btn,
-.music-form button,
-.music-library-btn {
+.music-form button {
     font: inherit;
 }
 
@@ -534,11 +822,28 @@ textarea:focus,
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 249, 251, 0.92));
     padding: 18px 20px;
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     gap: 12px;
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.92),
         0 10px 22px rgba(15, 23, 42, 0.035);
+}
+
+.clock-weather-head {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.clock-weather-head > div {
+    display: grid;
+    gap: 6px;
+    justify-items: center;
 }
 
 .weather-summary,
@@ -567,7 +872,8 @@ textarea:focus,
 
 .weather-refresh-btn {
     min-height: 38px;
-    padding: 8px 14px;
+    min-width: 116px;
+    padding: 8px 16px;
 }
 
 .timer-btn {

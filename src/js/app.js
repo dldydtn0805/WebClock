@@ -1,9 +1,9 @@
-import { getAppElements } from './dom.js?v=20260325-10';
-import { startClock } from './features/clock.js?v=20260325-10';
-import { createFocusFeature } from './features/focus.js?v=20260325-10';
-import { createMusicFeature } from './features/music.js?v=20260325-10';
-import { createWeatherFeature } from './features/weather.js?v=20260325-10';
-import { loadState, saveState as persistState } from './state.js?v=20260325-10';
+import { getAppElements } from './dom.js?v=20260325-52';
+import { startClock } from './features/clock.js?v=20260325-52';
+import { createFocusFeature } from './features/focus.js?v=20260325-52';
+import { createMusicFeature } from './features/music.js?v=20260325-52';
+import { createWeatherFeature } from './features/weather.js?v=20260325-52';
+import { loadState, saveState as persistState } from './state.js?v=20260325-52';
 
 const state = loadState();
 const elements = getAppElements();

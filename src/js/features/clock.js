@@ -6,8 +6,19 @@ function getGreeting(hours) {
     return '이제는 조금 느리게 하루를 닫아도 좋아요.';
 }
 
+export function setClockTickerMessage(elements, message, mode = 'default') {
+    if (!elements?.clockTicker || !elements?.clockTickerTexts?.length) {
+        return;
+    }
+
+    elements.clockTicker.dataset.tickerMode = mode;
+    elements.clockTickerTexts.forEach((element) => {
+        element.textContent = message;
+    });
+}
+
 export function updateClock(elements) {
-    if (!elements?.time || !elements?.date || !elements?.greeting || !elements?.body) {
+    if (!elements?.time || !elements?.date || !elements?.body) {
         return;
     }
 
@@ -21,7 +32,15 @@ export function updateClock(elements) {
         day: 'numeric',
         weekday: 'short'
     });
-    elements.greeting.textContent = getGreeting(hours);
+
+    if (elements.clockTicker?.dataset.tickerMode !== 'music') {
+        setClockTickerMessage(
+            elements,
+            `${getGreeting(hours)} 현재 시간이 항상 표시됩니다.`,
+            'default'
+        );
+    }
+
     elements.body.classList.remove('night-mode');
 }
 

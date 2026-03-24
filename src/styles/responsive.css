@@ -38,16 +38,31 @@
     }
 
     .music-form,
-    .music-actions,
     .music-volume-row,
     .clock-weather-head {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .music-preview,
-    .music-library-item {
+    .music-preview {
         grid-template-columns: 1fr;
+    }
+
+    .music-library-item {
+        grid-template-columns: 24px minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .music-library-handle {
+        grid-row: 1 / span 3;
+        height: 100%;
+        min-height: 100px;
+    }
+
+    .music-library-thumb,
+    .music-library-info,
+    .music-library-actions {
+        grid-column: 2;
     }
 
     .music-thumbnail,
@@ -66,6 +81,10 @@
 
     .music-form button {
         min-height: 48px;
+    }
+
+    .music-actions {
+        justify-content: center;
     }
 
     .pixel-time {

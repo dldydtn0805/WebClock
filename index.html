@@ -6,7 +6,7 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="icon" href="favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="stylesheet" href="src/styles/main.css?v=20260325-10">
+    <link rel="stylesheet" href="src/styles/main.css?v=20260325-51">
     <title>Web Clock Studio</title>
 </head>
 <body>
@@ -26,8 +26,10 @@
                             <span class="status-dot"></span>
                             <span class="status-label">Focus</span>
                         </div>
-                        <div class="pixel-time">12:34</div>
-                        <div class="pixel-date">Thu, Mar 20</div>
+                        <div class="clock-datetime">
+                            <div class="pixel-time">12:34</div>
+                            <div class="pixel-date">Thu, Mar 20</div>
+                        </div>
                         <section class="clock-weather-card" aria-label="Current weather">
                             <div class="clock-weather-head">
                                 <div>
@@ -41,9 +43,11 @@
                             <p id="weather-meta" class="weather-meta">서울, 대한민국</p>
                         </section>
                         <div class="clock-footer">
-                            <div>
-                                <p class="greeting-text">오늘도 차분하게 이어가 보세요.</p>
-                                <p class="clock-caption">현재 시간이 항상 표시됩니다.</p>
+                            <div class="clock-marquee" data-ticker-mode="default" aria-live="polite">
+                                <div class="clock-marquee-track">
+                                    <span class="clock-marquee-text">천천히 시작해도 괜찮아요. 현재 시간이 항상 표시됩니다.</span>
+                                    <span class="clock-marquee-text" aria-hidden="true">천천히 시작해도 괜찮아요. 현재 시간이 항상 표시됩니다.</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -102,13 +106,22 @@
                 </div>
                 <p class="music-status" aria-live="polite">유튜브 링크를 넣으면 배경음악처럼 반복 재생할 수 있어요.</p>
                 <div class="music-actions">
-                    <button type="button" class="timer-btn primary" data-music-action="play">Play</button>
-                    <button type="button" class="timer-btn" data-music-action="pause">Pause</button>
-                    <button type="button" class="timer-btn ghost" data-music-action="stop">Stop</button>
-                    <label class="music-loop-toggle">
-                        <input id="music-loop-input" type="checkbox" checked>
-                        <span>Loop Playlist</span>
-                    </label>
+                    <button type="button" class="timer-btn primary music-control-btn music-control-play" data-music-action="play" aria-label="Play" title="Play">
+                        <span class="music-control-glyph" aria-hidden="true"></span>
+                        <span class="sr-only">Play</span>
+                    </button>
+                    <button type="button" class="timer-btn music-control-btn music-control-pause" data-music-action="pause" aria-label="Pause" title="Pause">
+                        <span class="music-control-glyph" aria-hidden="true"></span>
+                        <span class="sr-only">Pause</span>
+                    </button>
+                    <button type="button" class="timer-btn ghost music-control-btn music-control-stop" data-music-action="stop" aria-label="Stop" title="Stop">
+                        <span class="music-control-glyph" aria-hidden="true"></span>
+                        <span class="sr-only">Stop</span>
+                    </button>
+                    <button type="button" id="music-loop-button" class="timer-btn ghost music-control-btn music-control-loop" aria-pressed="true" aria-label="Loop On" title="Loop On">
+                        <span class="music-control-glyph" aria-hidden="true">∞</span>
+                        <span class="sr-only">Loop On</span>
+                    </button>
                 </div>
                 <div class="music-volume-row">
                     <label class="music-volume-label" for="music-volume-input">Volume</label>
@@ -135,6 +148,6 @@
         </main>
     </div>
 
-    <script type="module" src="src/js/app.js?v=20260325-10"></script>
+    <script type="module" src="src/js/app.js?v=20260325-52"></script>
 </body>
 </html>

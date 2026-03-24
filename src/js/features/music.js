@@ -1,3 +1,5 @@
+import { setClockTickerMessage } from './clock.js?v=20260325-52';
+
 const YOUTUBE_API_URL = 'https://www.youtube.com/iframe_api';
 let youTubeApiPromise;
 
@@ -80,6 +82,12 @@ export function createMusicFeature({ state, saveState, elements }) {
     let shouldAutoplayOnReady = false;
     let progressIntervalId = null;
     let isSeeking = false;
+    let draggedTrackId = '';
+    let dropTargetTrackId = '';
+    let dropTargetPlacement = 'before';
+    let pointerDragSession = null;
+    let hasPendingReorder = false;
+    let dragProxy = null;
 
     function formatPlaybackTime(totalSeconds) {
         const safeSeconds = Math.max(0, Math.floor(totalSeconds || 0));
@@ -88,8 +96,24 @@ export function createMusicFeature({ state, saveState, elements }) {
         return `${minutes}:${seconds}`;
     }
 
-    function updateStatus(message) {
+    function updateStatus(message, { mirrorToTicker = Boolean(state.music.videoId) } = {}) {
         elements.musicStatus.textContent = message;
+
+        if (mirrorToTicker) {
+            const tickerTitle = state.music.title || getActiveTrack()?.title || '';
+            setClockTickerMessage(elements, tickerTitle || message, 'music');
+            return;
+        }
+
+        if (!state.music.videoId && elements.clockTicker) {
+            elements.clockTicker.dataset.tickerMode = 'default';
+        }
+    }
+
+    function getPlaybackStatusMessage() {
+        return state.music.isLooping
+            ? '지금 가장 중요한 일에 집중하고 있어요.'
+            : '오늘 해야 할 일을 차분히 이어가고 있어요.';
     }
 
     function persistMusic() {
@@ -121,6 +145,20 @@ export function createMusicFeature({ state, saveState, elements }) {
 
     function setVolumeLabel() {
         elements.musicVolumeValue.textContent = `${state.music.volume}%`;
+    }
+
+    function renderLoopButton() {
+        const loopLabel = state.music.isLooping ? 'Loop On' : 'Loop Off';
+        const loopText = elements.musicLoopButton.querySelector('.sr-only');
+
+        elements.musicLoopButton.classList.toggle('is-active', state.music.isLooping);
+        elements.musicLoopButton.setAttribute('aria-pressed', String(state.music.isLooping));
+        elements.musicLoopButton.setAttribute('aria-label', loopLabel);
+        elements.musicLoopButton.title = loopLabel;
+
+        if (loopText) {
+            loopText.textContent = loopLabel;
+        }
     }
 
     function renderTime(currentSeconds = 0, durationSeconds = 0) {
@@ -180,11 +218,274 @@ export function createMusicFeature({ state, saveState, elements }) {
         if (thumbnailUrl) {
             elements.musicThumbnail.src = thumbnailUrl;
             elements.musicThumbnail.alt = state.music.title || activeTrack?.title || '선택한 유튜브 곡 썸네일';
+            elements.musicThumbnail.draggable = false;
             elements.musicThumbnail.hidden = false;
         } else {
             elements.musicThumbnail.hidden = true;
             elements.musicThumbnail.alt = '';
         }
+    }
+
+    function clearDropTarget() {
+        elements.musicLibraryList.querySelectorAll('.music-library-item').forEach((item) => {
+            item.classList.remove('is-drop-target', 'drop-before', 'drop-after');
+        });
+
+        dropTargetTrackId = '';
+        dropTargetPlacement = 'before';
+    }
+
+    function clearDragState() {
+        elements.musicLibraryList.querySelectorAll('.music-library-item').forEach((item) => {
+            item.classList.remove('is-dragging', 'is-drag-origin');
+        });
+
+        dragProxy?.remove();
+        dragProxy = null;
+        draggedTrackId = '';
+        pointerDragSession = null;
+        hasPendingReorder = false;
+        clearDropTarget();
+    }
+
+    function setDropTarget(item, placement = 'before') {
+        clearDropTarget();
+
+        if (!item) {
+            return;
+        }
+
+        const trackId = item.dataset.trackId || '';
+
+        if (!trackId || trackId === draggedTrackId) {
+            return;
+        }
+
+        item.classList.add('is-drop-target', placement === 'after' ? 'drop-after' : 'drop-before');
+        dropTargetTrackId = trackId;
+        dropTargetPlacement = placement;
+    }
+
+    function findDropTarget(clientY) {
+        const libraryItems = [...elements.musicLibraryList.querySelectorAll('.music-library-item')]
+            .filter((item) => item.dataset.trackId !== draggedTrackId);
+
+        if (libraryItems.length === 0) {
+            return { targetItem: null, placement: 'before' };
+        }
+
+        for (const item of libraryItems) {
+            const rect = item.getBoundingClientRect();
+            const midpoint = rect.top + rect.height / 2;
+
+            if (clientY < midpoint) {
+                return { targetItem: item, placement: 'before' };
+            }
+        }
+
+        return {
+            targetItem: libraryItems[libraryItems.length - 1],
+            placement: 'after'
+        };
+    }
+
+    function animateLibraryReorder(previousRects) {
+        const libraryItems = [...elements.musicLibraryList.querySelectorAll('.music-library-item')];
+
+        libraryItems.forEach((item) => {
+            if (item.dataset.trackId === draggedTrackId) {
+                return;
+            }
+
+            const previousRect = previousRects.get(item.dataset.trackId || '');
+
+            if (!previousRect) {
+                return;
+            }
+
+            const nextRect = item.getBoundingClientRect();
+            const deltaX = previousRect.left - nextRect.left;
+            const deltaY = previousRect.top - nextRect.top;
+
+            if (Math.abs(deltaX) < 1 && Math.abs(deltaY) < 1) {
+                return;
+            }
+
+            item.style.transition = 'none';
+            item.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+            window.requestAnimationFrame(() => {
+                item.style.transition = '';
+                item.style.transform = '';
+            });
+        });
+    }
+
+    function updateDragProxyPosition(clientX, clientY) {
+        if (!dragProxy || !pointerDragSession) {
+            return;
+        }
+
+        dragProxy.style.transform = `translate(${clientX - pointerDragSession.offsetX}px, ${clientY - pointerDragSession.offsetY}px)`;
+    }
+
+    function createDragProxy(item, event) {
+        const rect = item.getBoundingClientRect();
+        const proxy = item.cloneNode(true);
+
+        proxy.classList.remove('active', 'is-drop-target', 'drop-before', 'drop-after', 'is-drag-origin');
+        proxy.classList.add('music-library-drag-proxy', 'is-dragging');
+        proxy.style.width = `${rect.width}px`;
+        proxy.style.height = `${rect.height}px`;
+        proxy.style.left = '0';
+        proxy.style.top = '0';
+
+        dragProxy?.remove();
+        dragProxy = proxy;
+        document.body.append(proxy);
+
+        pointerDragSession.offsetX = event.clientX - rect.left;
+        pointerDragSession.offsetY = event.clientY - rect.top;
+        updateDragProxyPosition(event.clientX, event.clientY);
+    }
+
+    function reorderLibraryItem(targetItem, placement = 'before') {
+        const draggedItem = elements.musicLibraryList.querySelector(`[data-track-id="${draggedTrackId}"]`);
+
+        if (!draggedItem || !targetItem || draggedItem === targetItem) {
+            return false;
+        }
+
+        const previousRects = new Map(
+            [...elements.musicLibraryList.querySelectorAll('.music-library-item')]
+                .map((item) => [item.dataset.trackId || '', item.getBoundingClientRect()])
+        );
+
+        const nextSibling = placement === 'after' ? targetItem.nextElementSibling : targetItem;
+
+        if (nextSibling === draggedItem) {
+            setDropTarget(targetItem, placement);
+            return false;
+        }
+
+        if (placement === 'after' && targetItem === draggedItem.previousElementSibling) {
+            setDropTarget(targetItem, placement);
+            return false;
+        }
+
+        elements.musicLibraryList.insertBefore(draggedItem, nextSibling);
+        setDropTarget(targetItem, placement);
+        animateLibraryReorder(previousRects);
+        hasPendingReorder = true;
+        return true;
+    }
+
+    function commitLibraryOrder() {
+        const orderedIds = [...elements.musicLibraryList.querySelectorAll('.music-library-item')]
+            .map((item) => item.dataset.trackId || '')
+            .filter(Boolean);
+
+        if (orderedIds.length !== state.music.tracks.length) {
+            clearDragState();
+            renderLibrary();
+            return;
+        }
+
+        const currentIds = state.music.tracks.map((track) => track.id);
+        const hasChanged = orderedIds.some((trackId, index) => trackId !== currentIds[index]);
+
+        if (!hasChanged) {
+            clearDragState();
+            return;
+        }
+
+        const tracksById = new Map(state.music.tracks.map((track) => [track.id, track]));
+        state.music.tracks = orderedIds
+            .map((trackId) => tracksById.get(trackId))
+            .filter(Boolean);
+
+        persistMusic();
+        clearDragState();
+        renderLibrary();
+        renderPreview();
+        updateStatus('재생목록 순서를 바꿨어요.', { mirrorToTicker: false });
+    }
+
+    function bindPointerReorder(item, trackId) {
+        function handlePointerMove(event) {
+            if (!pointerDragSession || pointerDragSession.pointerId !== event.pointerId) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const deltaX = event.clientX - pointerDragSession.startX;
+            const deltaY = event.clientY - pointerDragSession.startY;
+
+            if (!pointerDragSession.isDragging && Math.hypot(deltaX, deltaY) < 10) {
+                return;
+            }
+
+            if (!pointerDragSession.isDragging) {
+                pointerDragSession.isDragging = true;
+                item.classList.add('is-drag-origin');
+                createDragProxy(item, event);
+            }
+
+            updateDragProxyPosition(event.clientX, event.clientY);
+
+            const { targetItem, placement } = findDropTarget(event.clientY);
+
+            if (!targetItem || targetItem.dataset.trackId === trackId) {
+                clearDropTarget();
+                return;
+            }
+
+            reorderLibraryItem(targetItem, placement);
+        }
+
+        function finishPointerReorder(event) {
+            if (!pointerDragSession || pointerDragSession.pointerId !== event.pointerId) {
+                return;
+            }
+
+            const { isDragging } = pointerDragSession;
+            pointerDragSession = null;
+
+            window.removeEventListener('pointermove', handlePointerMove);
+            window.removeEventListener('pointerup', finishPointerReorder);
+            window.removeEventListener('pointercancel', finishPointerReorder);
+
+            if (isDragging && hasPendingReorder) {
+                commitLibraryOrder();
+                return;
+            }
+
+            clearDragState();
+        }
+
+        item.addEventListener('pointerdown', (event) => {
+            if (event.button !== 0) {
+                return;
+            }
+
+            if (event.target instanceof HTMLElement && event.target.closest('button')) {
+                return;
+            }
+
+            event.preventDefault();
+            pointerDragSession = {
+                pointerId: event.pointerId,
+                startX: event.clientX,
+                startY: event.clientY,
+                trackId
+            };
+            draggedTrackId = trackId;
+            hasPendingReorder = false;
+            window.addEventListener('pointermove', handlePointerMove, { passive: false });
+            window.addEventListener('pointerup', finishPointerReorder);
+            window.addEventListener('pointercancel', finishPointerReorder);
+        });
     }
 
     function renderLibrary() {
@@ -193,11 +494,20 @@ export function createMusicFeature({ state, saveState, elements }) {
         state.music.tracks.forEach((track) => {
             const item = document.createElement('li');
             item.className = `music-library-item${track.id === state.music.activeTrackId ? ' active' : ''}`;
+            item.draggable = false;
+            item.dataset.trackId = track.id;
+
+            const handle = document.createElement('span');
+            handle.className = 'music-library-handle';
+            handle.setAttribute('aria-hidden', 'true');
+            handle.title = '드래그해서 순서를 바꿀 수 있어요';
+            handle.draggable = false;
 
             const thumbnail = document.createElement('img');
             thumbnail.className = 'music-library-thumb';
             thumbnail.src = track.thumbnailUrl || getThumbnailUrl(track.videoId);
             thumbnail.alt = `${getSafeTitle(track)} 썸네일`;
+            thumbnail.draggable = false;
 
             const info = document.createElement('div');
             info.className = 'music-library-info';
@@ -217,22 +527,25 @@ export function createMusicFeature({ state, saveState, elements }) {
 
             const playButton = document.createElement('button');
             playButton.type = 'button';
-            playButton.className = 'music-library-btn';
+            playButton.className = 'music-library-btn is-play-btn';
             playButton.textContent = '재생';
+            playButton.dataset.hoverLabel = '\u25B6';
             playButton.addEventListener('click', async () => {
                 await selectTrack(track.id, true);
             });
 
             const deleteButton = document.createElement('button');
             deleteButton.type = 'button';
-            deleteButton.className = 'music-library-btn';
+            deleteButton.className = 'music-library-btn is-delete-btn';
             deleteButton.textContent = '삭제';
+            deleteButton.dataset.hoverLabel = ':(';
             deleteButton.addEventListener('click', () => {
                 removeTrack(track.id);
             });
 
+            bindPointerReorder(item, track.id);
             actions.append(playButton, deleteButton);
-            item.append(thumbnail, info, actions);
+            item.append(handle, thumbnail, info, actions);
             elements.musicLibraryList.append(item);
         });
 
@@ -353,7 +666,7 @@ export function createMusicFeature({ state, saveState, elements }) {
 
                         if (shouldAutoplayOnReady && state.music.videoId) {
                             player.playVideo();
-                            updateStatus(`"${state.music.title || '선택한 곡'}"을(를) 반복 재생하고 있어요.`);
+                            updateStatus('집중 세션을 시작했어요.');
                             shouldAutoplayOnReady = false;
                         }
 
@@ -376,7 +689,7 @@ export function createMusicFeature({ state, saveState, elements }) {
                                     player.playVideo();
                                 }
                             } else {
-                                updateStatus('재생이 끝났어요.');
+                                updateStatus('한 곡이 끝났어요. 다음 흐름을 이어가 보세요.');
                             }
                         }
 
@@ -395,13 +708,13 @@ export function createMusicFeature({ state, saveState, elements }) {
                                 persistMusic();
                             }
 
-                            updateStatus(`"${state.music.title || '선택한 곡'}"을(를)${state.music.isLooping ? ' 반복 재생 중이에요.' : ' 재생 중이에요.'}`);
+                            updateStatus(getPlaybackStatusMessage());
                         }
 
                         if (event.data === YT.PlayerState.PAUSED) {
                             updateProgress();
                             stopProgressLoop();
-                            updateStatus('재생을 잠시 멈췄어요.');
+                            updateStatus('잠깐 멈춰도 괜찮아요. 준비되면 다시 이어가요.');
                         }
 
                         if (event.data === YT.PlayerState.BUFFERING) {
@@ -438,7 +751,7 @@ export function createMusicFeature({ state, saveState, elements }) {
         });
         elements.musicTitle.textContent = '곡 불러오는 중...';
         elements.musicUrlInput.value = state.music.url;
-        updateStatus('유튜브 플레이어를 불러오는 중이에요...');
+        updateStatus('집중에 맞는 배경음을 준비하고 있어요...');
         renderPreview();
         renderLibrary();
         persistMusic();
@@ -452,7 +765,7 @@ export function createMusicFeature({ state, saveState, elements }) {
                     player.loadVideoById(videoId);
                 } else if (typeof player.cueVideoById === 'function') {
                     player.cueVideoById(videoId);
-                    updateStatus('곡을 불러왔어요. 원할 때 재생해 주세요.');
+                    updateStatus('준비됐어요. 원할 때 바로 재생해요.');
                 }
 
                 syncVolume();
@@ -484,7 +797,7 @@ export function createMusicFeature({ state, saveState, elements }) {
 
     function hydrate() {
         elements.musicUrlInput.value = state.music.url;
-        elements.musicLoopInput.checked = state.music.isLooping;
+        renderLoopButton();
         elements.musicVolumeInput.value = String(state.music.volume);
         setVolumeLabel();
         renderPreview();
@@ -521,10 +834,11 @@ export function createMusicFeature({ state, saveState, elements }) {
             await handleLoad();
         });
 
-        elements.musicLoopInput.addEventListener('change', () => {
-            state.music.isLooping = elements.musicLoopInput.checked;
+        elements.musicLoopButton.addEventListener('click', () => {
+            state.music.isLooping = !state.music.isLooping;
+            renderLoopButton();
             persistMusic();
-            updateStatus(state.music.isLooping ? '목록 반복 재생이 켜졌어요.' : '목록 반복 재생이 꺼졌어요.');
+            updateStatus(state.music.isLooping ? '반복 재생으로 집중 흐름을 이어가요.' : '한 곡씩 차분히 재생할게요.');
         });
 
         elements.musicVolumeInput.addEventListener('input', () => {
@@ -598,7 +912,7 @@ export function createMusicFeature({ state, saveState, elements }) {
                     player.stopVideo();
                     stopProgressLoop();
                     renderTime(0, typeof player.getDuration === 'function' ? player.getDuration() : 0);
-                    updateStatus('재생을 멈췄어요.');
+                    updateStatus('음악을 멈췄어요. 필요한 만큼 조용히 집중해요.');
                 }
             });
         });
@@ -606,11 +920,11 @@ export function createMusicFeature({ state, saveState, elements }) {
 
     async function restore() {
         if (!state.music.videoId) {
-            updateStatus('유튜브 링크를 넣으면 반복 배경음악을 시작할 수 있어요.');
+            updateStatus('집중용 배경음악을 준비해 보세요.');
             return;
         }
 
-        updateStatus('마지막으로 들은 곡을 복원하는 중이에요...');
+        updateStatus('이전 집중 흐름을 불러오는 중이에요...');
 
         try {
             await ensurePlayer();
@@ -621,7 +935,7 @@ export function createMusicFeature({ state, saveState, elements }) {
                 renderPreview();
                 renderLibrary();
                 updateProgress();
-                updateStatus('마지막 곡을 불러왔어요. 재생을 눌러 이어서 들을 수 있어요.');
+                updateStatus('마지막 집중 흐름을 복원했어요. 바로 이어가면 돼요.');
             }
         } catch (error) {
             updateStatus('저장된 곡은 찾았지만 플레이어를 복원하지 못했어요.');
