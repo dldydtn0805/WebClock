@@ -1,47 +1,59 @@
 .page-shell {
     position: relative;
     z-index: 1;
-    flex: 1;
-    width: min(930px, calc(100% - 40px));
+    flex: 0 1 auto;
+    width: min(680px, calc(100% - 40px));
     margin: 0 auto;
-    padding: 26px 0 36px;
+    padding: 28px 0 44px;
 }
 
 .desk-app {
     width: 100%;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: minmax(360px, 440px) minmax(0, 1fr);
+    grid-template-columns: 1fr;
+    grid-template-areas:
+        'clock'
+        'music';
     gap: var(--section-gap);
     align-items: stretch;
 }
 
-.dashboard-panel,
-.clock-panel,
-.music-panel {
+.app-panel {
     background: var(--panel);
     border: 1px solid var(--panel-border);
     backdrop-filter: saturate(160%) blur(24px);
     -webkit-backdrop-filter: saturate(160%) blur(24px);
     border-radius: 36px;
     box-shadow: var(--shadow);
+    padding: 28px;
+    min-width: 0;
 }
 
-.dashboard-panel,
-.clock-panel,
+.clock-panel {
+    grid-area: clock;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
 .music-panel {
-    padding: 32px;
+    grid-area: music;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
-.top-row,
-.bottom-row,
 .clock-topline,
 .clock-footer,
 .card-head,
 .buttons,
-.todo-form,
 .music-form,
-.music-actions {
+.music-actions,
+.music-volume-row,
+.music-library-head,
+.music-seek-times,
+.clock-weather-head {
     display: flex;
     gap: 16px;
 }
@@ -49,23 +61,22 @@
 .clock-topline,
 .clock-footer,
 .card-head {
-    align-items: center;
     justify-content: space-between;
 }
 
+.clock-topline,
 .clock-footer {
     align-items: center;
+}
+
+.card-head,
+.clock-weather-head {
+    align-items: flex-start;
 }
 
 .buttons {
     justify-content: center;
     align-items: center;
-}
-
-.clock-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
 }
 
 .clock-shell {
@@ -75,74 +86,31 @@
     height: 100%;
 }
 
-.dashboard-panel {
-    display: grid;
-    grid-template-rows: auto auto;
-    gap: 24px;
-}
-
-.top-row,
-.bottom-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
-}
-
-.top-row {
-    grid-template-columns: minmax(0, 1fr);
-}
-
-.top-row > .weather-card {
-    min-height: 0;
-}
-
-.bottom-row > .clock-panel {
-    min-width: 0;
-    gap: 18px;
-}
-
-.bottom-row > .clock-panel .clock-shell {
-    padding: 16px;
-    border-radius: 32px;
-}
-
-.bottom-row > .clock-panel .clock-screen {
+.clock-screen {
     flex: 1 1 auto;
     min-height: 0;
-    padding: 28px;
-    border-radius: 28px;
 }
 
-.bottom-row > .clock-panel .pixel-time {
-    margin: 24px 0 10px;
-    font-size: clamp(2.8rem, 4.8vw, 4.5rem);
+.panel-head {
+    margin-bottom: 4px;
 }
 
-.bottom-row > .clock-panel .clock-footer {
-    margin-top: 24px;
-    padding-top: 16px;
-}
-
-.music-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
-.focus-strip {
-    padding: 0;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-}
-
-.todo-form,
-.music-form,
-.music-actions {
-    flex-wrap: wrap;
+.panel-chip {
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(0, 113, 227, 0.1);
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
+.focus-strip,
 .focus-card {
     padding: 0;
     background: transparent;
@@ -150,34 +118,18 @@
     box-shadow: none;
 }
 
-@media (min-width: 921px) {
-    body {
-        min-height: 100dvh;
-        overflow: hidden;
-    }
+.focus-card {
+    display: grid;
+    gap: 12px;
+}
 
-    .page-shell {
-        height: 100dvh;
-    }
+.music-form,
+.music-actions {
+    flex-wrap: wrap;
+    align-items: center;
+}
 
-    .desk-app {
-        height: 100%;
-        min-height: 0;
-    }
-
-    .dashboard-panel,
-    .music-panel,
-    .bottom-row {
-        min-height: 0;
-    }
-
-    .dashboard-panel,
-    .music-panel {
-        height: 100%;
-        overflow: hidden;
-    }
-
-    .dashboard-panel {
-        grid-template-rows: auto minmax(0, 1fr);
-    }
+.clock-weather-head > div:first-child,
+.card-head > div:first-child {
+    min-width: 0;
 }

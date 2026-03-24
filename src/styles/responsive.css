@@ -4,48 +4,20 @@
     }
 
     .page-shell {
-        width: min(100% - 24px, 100%);
+        width: min(100% - 28px, 100%);
         padding: 16px 0 28px;
     }
 
     .desk-app {
         grid-template-columns: 1fr;
-    }
-
-    .top-row,
-    .bottom-row {
-        grid-template-columns: 1fr;
-    }
-
-    .bottom-row > .clock-panel {
-        gap: 22px;
-    }
-
-    .bottom-row > .clock-panel .clock-shell {
-        padding: 20px;
-        border-radius: 40px;
-    }
-
-    .bottom-row > .clock-panel .clock-screen {
-        padding: 34px;
-        border-radius: 34px;
-    }
-
-    .bottom-row > .clock-panel .pixel-time {
-        margin-top: 34px;
-        font-size: clamp(3.4rem, 6vw, 5.8rem);
-    }
-
-    .bottom-row > .clock-panel .clock-footer {
-        margin-top: 30px;
-        padding-top: 20px;
+        grid-template-areas:
+            'clock'
+            'music';
     }
 }
 
 @media (max-width: 560px) {
-    .clock-panel,
-    .dashboard-panel,
-    .music-panel {
+    .app-panel {
         padding: 20px;
         border-radius: 26px;
     }
@@ -65,13 +37,10 @@
         border-radius: 24px;
     }
 
-    .todo-form {
-        flex-direction: column;
-    }
-
     .music-form,
     .music-actions,
-    .music-volume-row {
+    .music-volume-row,
+    .clock-weather-head {
         flex-direction: column;
         align-items: stretch;
     }
@@ -90,43 +59,16 @@
         justify-content: stretch;
     }
 
-    .music-library-btn {
+    .music-library-btn,
+    .weather-refresh-btn {
         flex: 1 1 0;
     }
 
-    .weather-game-head {
-        align-items: stretch;
-    }
-
-    .weather-game-actions {
-        width: 100%;
-    }
-
-    .weather-refresh-btn,
-    .weather-game-toggle {
-        flex: 1 1 0;
-    }
-
-    .weather-game-canvas {
-        height: 140px;
-    }
-
-    .todo-form button,
     .music-form button {
         min-height: 48px;
     }
 
     .pixel-time {
-        margin-top: 28px;
-        font-size: clamp(2.7rem, 13vw, 4rem);
-    }
-
-    .bottom-row > .clock-panel .clock-screen {
-        padding: 24px;
-        border-radius: 24px;
-    }
-
-    .bottom-row > .clock-panel .pixel-time {
         margin-top: 28px;
         font-size: clamp(2.7rem, 13vw, 4rem);
     }

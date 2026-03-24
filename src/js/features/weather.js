@@ -1,97 +1,76 @@
-import { createWeatherRunner } from './weatherRunner.js';
-
 const WEATHER_CODES = {
-    0: 'Clear',
-    1: 'Mostly clear',
-    2: 'Partly cloudy',
-    3: 'Overcast',
-    45: 'Fog',
-    48: 'Rime fog',
-    51: 'Light drizzle',
-    53: 'Drizzle',
-    55: 'Dense drizzle',
-    56: 'Freezing drizzle',
-    57: 'Heavy freezing drizzle',
-    61: 'Light rain',
-    63: 'Rain',
-    65: 'Heavy rain',
-    66: 'Freezing rain',
-    67: 'Heavy freezing rain',
-    71: 'Light snow',
-    73: 'Snow',
-    75: 'Heavy snow',
-    77: 'Snow grains',
-    80: 'Rain showers',
-    81: 'Heavy rain showers',
-    82: 'Violent rain showers',
-    85: 'Snow showers',
-    86: 'Heavy snow showers',
-    95: 'Thunderstorm',
-    96: 'Thunderstorm with hail',
-    99: 'Severe thunderstorm with hail'
+    0: '맑음',
+    1: '대체로 맑음',
+    2: '구름 조금',
+    3: '흐림',
+    45: '안개',
+    48: '서리 안개',
+    51: '약한 이슬비',
+    53: '이슬비',
+    55: '강한 이슬비',
+    56: '어는 이슬비',
+    57: '강한 어는 이슬비',
+    61: '약한 비',
+    63: '비',
+    65: '강한 비',
+    66: '어는 비',
+    67: '강한 어는 비',
+    71: '약한 눈',
+    73: '눈',
+    75: '강한 눈',
+    77: '싸락눈',
+    80: '소나기',
+    81: '강한 소나기',
+    82: '매우 강한 소나기',
+    85: '눈 소나기',
+    86: '강한 눈 소나기',
+    95: '뇌우',
+    96: '우박을 동반한 뇌우',
+    99: '강한 우박을 동반한 뇌우'
+};
+
+const SEOUL_LOCATION = {
+    latitude: 37.5665,
+    longitude: 126.9780,
+    label: '서울, 대한민국'
 };
 
 function getWeatherLabel(code, isDay) {
     if (code === 0) {
-        return isDay ? 'Sunny' : 'Clear night';
+        return isDay ? '맑음' : '맑은 밤';
     }
 
-    return WEATHER_CODES[code] ?? 'Current conditions';
+    return WEATHER_CODES[code] ?? '현재 날씨';
 }
 
 function formatTemperature(value) {
-    return `${Math.round(value)}C`;
+    return `${Math.round(value)}도`;
 }
 
 function getNumericTemperature(value) {
     return Number.isFinite(value) ? value : null;
 }
 
-function renderWeather(elements, weatherRunner, { summary, meta, isError = false, isLoading = false }) {
+function renderWeather(elements, { summary, meta, isError = false, isLoading = false }) {
+    if (!elements.weatherSummary || !elements.weatherMeta || !elements.weatherRefreshButton) {
+        return;
+    }
+
     elements.weatherSummary.textContent = summary;
     elements.weatherMeta.textContent = meta;
     elements.weatherSummary.dataset.state = isError ? 'error' : (isLoading ? 'loading' : 'ready');
     elements.weatherRefreshButton.disabled = isLoading;
-    elements.weatherRefreshButton.textContent = isLoading ? 'Refreshing...' : 'Refresh';
-    weatherRunner.setWeatherText(summary, meta, { isError, isLoading });
+    elements.weatherRefreshButton.textContent = isLoading ? '불러오는 중...' : '새로고침';
 }
 
 function getWeatherErrorMeta(error) {
-    if (error && typeof error === 'object' && 'code' in error) {
-        if (error.code === 1) {
-            return 'Location permission was blocked';
-        }
-
-        if (error.code === 2) {
-            return 'Current location is unavailable';
-        }
-
-        if (error.code === 3) {
-            return 'Location request timed out';
-        }
-    }
-
     const message = typeof error?.message === 'string' ? error.message : '';
-    if (message.toLowerCase().includes('geolocation')) {
-        return 'Allow location access and try again';
+
+    if (message.toLowerCase().includes('failed with status')) {
+        return `서울 날씨 불러오기 오류: ${message}`;
     }
 
-    return 'Weather service is temporarily unavailable';
-}
-
-function getCurrentPosition() {
-    return new Promise((resolve, reject) => {
-        if (!navigator.geolocation) {
-            reject(new Error('Geolocation is not supported in this browser.'));
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: false,
-            timeout: 10000,
-            maximumAge: 10 * 60 * 1000
-        });
-    });
+    return '서울 날씨 정보를 잠시 불러올 수 없어요';
 }
 
 async function fetchWeather(latitude, longitude) {
@@ -106,81 +85,56 @@ async function fetchWeather(latitude, longitude) {
 
     const response = await fetch(url);
     if (!response.ok) {
-        throw new Error(`Weather request failed with status ${response.status}.`);
+        throw new Error(`날씨 요청 실패: 상태 코드 ${response.status}`);
     }
 
     const data = await response.json();
     if (!data.current) {
-        throw new Error('Weather data is unavailable.');
+        throw new Error('날씨 데이터를 받을 수 없어요.');
     }
 
     return data.current;
 }
 
 export function createWeatherFeature({ state, saveState, elements }) {
-    let weatherRunner = {
-        setWeather() {},
-        setWeatherText() {},
-        setLoading() {},
-        setError() {}
-    };
-
-    try {
-        weatherRunner = createWeatherRunner({
-            canvas: elements.weatherGameCanvas,
-            statusElement: elements.weatherGameStatus,
-            hintElement: elements.weatherGameHint,
-            toggleButton: elements.weatherGameToggleButton
-        });
-    } catch (error) {
-        if (elements.weatherGameStatus) {
-            elements.weatherGameStatus.textContent = 'Weather Dino unavailable';
-        }
-
-        if (elements.weatherGameHint) {
-            elements.weatherGameHint.textContent = 'Your browser skipped the mini game, but weather updates still work.';
-        }
-
-        console.error('Weather runner failed to initialize.', error);
-    }
-
     function hydrate() {
-        weatherRunner.setWeather(state.weatherCode, state.weatherIsDay, state.weatherTemperature);
+        if (!elements.weatherSummary || !elements.weatherMeta || !elements.weatherRefreshButton) {
+            return;
+        }
 
         if (state.weather) {
-            renderWeather(elements, weatherRunner, {
+            renderWeather(elements, {
                 summary: state.weather,
-                meta: 'Last saved weather snapshot'
+                meta: `마지막으로 저장된 ${SEOUL_LOCATION.label} 날씨`
             });
             return;
         }
 
-        renderWeather(elements, weatherRunner, {
-            summary: 'Loading current weather...',
-            meta: 'Using your current location',
+        renderWeather(elements, {
+            summary: '서울 날씨 불러오는 중...',
+            meta: SEOUL_LOCATION.label,
             isLoading: true
         });
     }
 
     async function refreshWeather() {
-        renderWeather(elements, weatherRunner, {
-            summary: 'Loading current weather...',
-            meta: 'Using your current location',
+        renderWeather(elements, {
+            summary: '서울 날씨 불러오는 중...',
+            meta: SEOUL_LOCATION.label,
             isLoading: true
         });
 
         try {
-            const position = await getCurrentPosition();
             const weather = await fetchWeather(
-                position.coords.latitude,
-                position.coords.longitude
+                SEOUL_LOCATION.latitude,
+                SEOUL_LOCATION.longitude
             );
 
             const summary = [
                 getWeatherLabel(weather.weather_code, weather.is_day === 1),
                 formatTemperature(weather.temperature_2m),
-                `Feels like ${formatTemperature(weather.apparent_temperature)}`,
-                `Wind ${Math.round(weather.wind_speed_10m)} km/h`
+                `체감 ${formatTemperature(weather.apparent_temperature)}`,
+                `바람 ${Math.round(weather.wind_speed_10m)} km/h`
             ].join(' · ');
 
             state.weather = summary;
@@ -188,19 +142,14 @@ export function createWeatherFeature({ state, saveState, elements }) {
             state.weatherIsDay = weather.is_day === 1;
             state.weatherTemperature = getNumericTemperature(weather.temperature_2m);
             saveState();
-            weatherRunner.setWeather(
-                weather.weather_code,
-                weather.is_day === 1,
-                state.weatherTemperature
-            );
 
-            renderWeather(elements, weatherRunner, {
+            renderWeather(elements, {
                 summary,
-                meta: 'Auto-updated from your current location'
+                meta: `${SEOUL_LOCATION.label} 기준으로 자동 갱신됨`
             });
         } catch (error) {
-            renderWeather(elements, weatherRunner, {
-                summary: state.weather || 'Unable to load weather automatically.',
+            renderWeather(elements, {
+                summary: state.weather || '서울 날씨를 자동으로 불러오지 못했어요.',
                 meta: getWeatherErrorMeta(error),
                 isError: true
             });
@@ -208,6 +157,10 @@ export function createWeatherFeature({ state, saveState, elements }) {
     }
 
     function bindEvents() {
+        if (!elements.weatherRefreshButton) {
+            return;
+        }
+
         elements.weatherRefreshButton.addEventListener('click', () => {
             refreshWeather();
         });

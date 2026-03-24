@@ -1,10 +1,8 @@
 .eyebrow,
 .footer-label,
 .card-label,
-.planner-summary,
-.task-count,
-.autosave-label,
-.status-label {
+.status-label,
+.clock-caption {
     margin: 0;
     font-size: 0.78rem;
     font-weight: 600;
@@ -18,11 +16,11 @@
     border: 1px solid var(--border);
     border-radius: 40px;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.1)),
-        linear-gradient(180deg, var(--surface-tint), rgba(255, 255, 255, 0.18));
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.72)),
+        linear-gradient(180deg, var(--surface-tint), rgba(255, 255, 255, 0.6));
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.45),
-        0 14px 32px rgba(15, 23, 42, 0.06);
+        inset 0 1px 0 rgba(255, 255, 255, 0.82),
+        0 18px 34px rgba(15, 23, 42, 0.05);
 }
 
 .clock-screen {
@@ -31,11 +29,13 @@
     padding: 34px;
     border-radius: 34px;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.18)),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(252, 252, 253, 0.82)),
         var(--screen);
     color: var(--screen-soft);
     border: 1px solid var(--panel-border);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        0 10px 24px rgba(15, 23, 42, 0.035);
 }
 
 .clock-topline {
@@ -85,22 +85,26 @@
     border-top: 1px solid var(--panel-border);
 }
 
-.clock-footer > div:last-child {
-    margin-left: auto;
-    text-align: right;
+.clock-footer > div {
+    min-width: 0;
 }
 
 .greeting-text,
-.completed-count,
+.clock-caption,
 .card-head h2 {
     margin: 6px 0 0;
 }
 
 .greeting-text,
-.completed-count {
+.clock-caption {
     font-size: 1rem;
     font-weight: 600;
     letter-spacing: -0.01em;
+}
+
+.clock-caption {
+    color: var(--muted);
+    font-size: 0.9rem;
 }
 
 .card-head h2 {
@@ -179,7 +183,7 @@ body.night-mode .greeting-text {
     color: #f5f5f7;
 }
 
-body.night-mode .completed-count {
+body.night-mode .clock-caption {
     color: rgba(245, 245, 247, 0.72);
 }
 
@@ -194,7 +198,9 @@ body.night-mode .btn {
     border: 1px solid var(--panel-border);
     border-radius: var(--card-radius);
     padding: var(--card-padding);
-    box-shadow: var(--shadow-soft);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        var(--shadow-soft);
 }
 
 
@@ -202,7 +208,8 @@ body.night-mode .btn {
     position: relative;
     overflow: hidden;
     background:
-        radial-gradient(circle at bottom left, rgba(255, 159, 10, 0.15), transparent 34%),
+        radial-gradient(circle at bottom left, rgba(0, 113, 227, 0.05), transparent 34%),
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.8), transparent 28%),
         var(--panel-strong);
 }
 
@@ -216,8 +223,8 @@ body.night-mode .btn {
 .music-badge {
     padding: 8px 14px;
     border-radius: 999px;
-    background: rgba(255, 159, 10, 0.12);
-    color: #c46a00;
+    background: rgba(0, 113, 227, 0.08);
+    color: #0071e3;
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -235,8 +242,9 @@ body.night-mode .btn {
     align-items: center;
     padding: 16px;
     border-radius: 24px;
-    background: rgba(17, 24, 39, 0.035);
-    border: 1px solid rgba(17, 24, 39, 0.05);
+    background: rgba(248, 249, 251, 0.92);
+    border: 1px solid rgba(15, 23, 42, 0.045);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .music-thumbnail {
@@ -258,7 +266,7 @@ body.night-mode .btn {
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #c46a00;
+    color: var(--accent);
 }
 
 .music-current-meta {
@@ -274,17 +282,17 @@ body.night-mode .btn {
 .music-form button {
     border: 0;
     border-radius: 999px;
-    background: #111827;
+    background: #1d1d1f;
     color: #fff;
     min-height: var(--control-height);
     padding: 0 24px;
     font-weight: 600;
     transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
-    box-shadow: 0 10px 24px rgba(17, 24, 39, 0.14);
+    box-shadow: 0 12px 24px rgba(29, 29, 31, 0.14);
 }
 
 .music-form button:hover {
-    background: #1f2937;
+    background: #2c2c2e;
     transform: translateY(-1px);
 }
 
@@ -330,13 +338,13 @@ body.night-mode .btn {
     justify-content: space-between;
     font-size: 0.92rem;
     font-weight: 600;
-    color: var(--muted);
+    color: var(--text-soft);
 }
 
 .music-seek-input {
     width: 100%;
     margin-top: 10px;
-    accent-color: #c46a00;
+    accent-color: var(--accent);
 }
 
 .music-volume-value {
@@ -390,12 +398,16 @@ body.night-mode .btn {
     border-radius: 22px;
     background: var(--input-bg);
     border: 1px solid rgba(15, 23, 42, 0.045);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.78),
+        0 8px 18px rgba(15, 23, 42, 0.03);
 }
 
 .music-library-item.active {
-    border-color: rgba(255, 159, 10, 0.35);
-    box-shadow: inset 0 0 0 1px rgba(255, 159, 10, 0.2);
+    border-color: rgba(0, 113, 227, 0.22);
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 113, 227, 0.12),
+        0 10px 22px rgba(0, 113, 227, 0.06);
 }
 
 .music-library-thumb {
@@ -440,7 +452,7 @@ body.night-mode .btn {
 
 .music-library-btn {
     border: 1px solid var(--panel-border);
-    background: rgba(255, 255, 255, 0.82);
+    background: rgba(255, 255, 255, 0.96);
     color: var(--text);
     border-radius: 999px;
     padding: 10px 14px;
@@ -448,6 +460,7 @@ body.night-mode .btn {
     font-weight: 600;
     cursor: pointer;
     transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
 }
 
 .music-library-btn:hover {
@@ -483,18 +496,15 @@ body.night-mode .btn {
 }
 
 .focus-input,
-.todo-form input,
 textarea,
 .music-url-input,
 .timer-btn,
-.todo-form button,
 .music-form button,
 .music-library-btn {
     font: inherit;
 }
 
 .focus-input,
-.todo-form input,
 textarea,
 .music-url-input {
     width: 100%;
@@ -510,7 +520,6 @@ textarea,
 }
 
 .focus-input:focus,
-.todo-form input:focus,
 textarea:focus,
 .music-url-input:focus {
     outline: none;
@@ -518,30 +527,18 @@ textarea:focus,
     box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.14);
 }
 
-.todo-form {
-    margin-top: 18px;
-    align-items: stretch;
-}
-
-.weather-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-.todo-card {
-    display: flex;
-    flex-direction: column;
-}
-
-.weather-panel {
+.clock-weather-card {
+    margin-top: 26px;
     border: 1px solid var(--panel-border);
     border-radius: 22px;
-    background: var(--input-bg);
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 249, 251, 0.92));
     padding: 18px 20px;
     display: grid;
     gap: 12px;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        0 10px 22px rgba(15, 23, 42, 0.035);
 }
 
 .weather-summary,
@@ -573,91 +570,8 @@ textarea:focus,
     padding: 8px 14px;
 }
 
-.weather-game {
-    min-width: 0;
-    display: grid;
-    gap: 10px;
-    padding-top: 0;
-    border-top: 0;
-}
-
-.weather-game-head {
-    display: none;
-}
-
-.weather-game-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.weather-game-title,
-.weather-game-status,
-.weather-game-hint {
-    margin: 0;
-}
-
-.weather-game-title {
-    font-size: 0.88rem;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-}
-
-.weather-game-status,
-.weather-game-hint {
-    color: var(--text-soft);
-    font-size: 0.84rem;
-    line-height: 1.45;
-}
-
-.weather-game-hint {
-    display: none;
-}
-
-.weather-game-toggle {
-    min-height: 38px;
-    padding: 8px 14px;
-}
-
-.weather-game-stage {
-    position: relative;
-    min-width: 0;
-    border: 1px solid rgba(255, 255, 255, 0.32);
-    border-radius: 18px;
-    overflow: hidden;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.22));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42);
-}
-
-.weather-game-canvas {
-    display: block;
-    width: 100%;
-    height: clamp(132px, 23vw, 168px);
-    max-width: 100%;
-    touch-action: manipulation;
-}
-
-.todo-form button,
 .timer-btn {
     cursor: pointer;
-}
-
-.todo-form button {
-    border: 0;
-    border-radius: 999px;
-    background: var(--accent);
-    color: #fff;
-    min-height: var(--control-height);
-    padding: 0 24px;
-    font-weight: 600;
-    transition: background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
-    box-shadow: 0 10px 24px rgba(0, 113, 227, 0.2);
-}
-
-.todo-form button:hover {
-    background: var(--accent-deep);
-    transform: translateY(-1px);
 }
 
 .timer-btn {
@@ -666,24 +580,26 @@ textarea:focus,
     justify-content: center;
     border: 1px solid var(--panel-border);
     border-radius: 999px;
-    background: var(--input-bg);
+    background: rgba(255, 255, 255, 0.94);
     color: var(--text);
     min-height: 46px;
     padding: 10px 18px;
     font-weight: 600;
     transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.92),
+        0 8px 18px rgba(15, 23, 42, 0.035);
 }
 
 .timer-btn.primary {
     background: var(--accent);
     border-color: var(--accent);
     color: #fff;
-    box-shadow: 0 12px 28px rgba(0, 113, 227, 0.22);
+    box-shadow: 0 14px 26px rgba(0, 113, 227, 0.2);
 }
 
 .timer-btn.ghost {
-    background: rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.82);
 }
 
 .timer-btn:hover {
@@ -691,92 +607,29 @@ textarea:focus,
     transform: translateY(-1px);
 }
 
-.todo-list {
-    list-style: none;
-    margin: 18px 0 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    max-height: var(--list-scroll-max-height);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding-right: 6px;
-}
-
 .music-panel,
-.todo-card,
-.music-library-list,
-.todo-list {
+.music-library-list {
     min-height: 0;
 }
 
 @media (min-width: 921px) {
-    .music-library-list,
-    .todo-list {
+    .music-library-list {
         flex: 1 1 auto;
         max-height: none;
     }
 }
 
-.music-library-list::-webkit-scrollbar,
-.todo-list::-webkit-scrollbar {
+.music-library-list::-webkit-scrollbar {
     width: 8px;
 }
 
-.music-library-list::-webkit-scrollbar-thumb,
-.todo-list::-webkit-scrollbar-thumb {
+.music-library-list::-webkit-scrollbar-thumb {
     background: rgba(110, 110, 115, 0.38);
     border-radius: 999px;
 }
 
-.music-library-list::-webkit-scrollbar-track,
-.todo-list::-webkit-scrollbar-track {
+.music-library-list::-webkit-scrollbar-track {
     background: transparent;
-}
-
-.todo-item {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 12px;
-    align-items: center;
-    padding: 17px 18px;
-    border-radius: 22px;
-    background: var(--input-bg);
-    border: 1px solid rgba(15, 23, 42, 0.045);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-.todo-item.done .todo-text {
-    text-decoration: line-through;
-    color: var(--muted);
-}
-
-.todo-check {
-    width: 18px;
-    height: 18px;
-    margin: 0;
-    accent-color: var(--accent);
-}
-
-.todo-text {
-    word-break: break-word;
-    font-weight: 500;
-}
-
-.delete-btn {
-    border: 0;
-    background: transparent;
-    color: var(--muted);
-    font: inherit;
-    cursor: pointer;
-    font-weight: 600;
-    justify-self: end;
-}
-
-.empty-state {
-    margin: 16px 0 0;
-    color: var(--muted);
 }
 
 textarea {

@@ -97,7 +97,7 @@ export function createMusicFeature({ state, saveState, elements }) {
     }
 
     function getSafeTitle(track) {
-        return track?.title || 'Untitled YouTube track';
+        return track?.title || '제목 없는 유튜브 곡';
     }
 
     function getActiveTrack() {
@@ -172,14 +172,14 @@ export function createMusicFeature({ state, saveState, elements }) {
         const activeTrack = getActiveTrack();
         const thumbnailUrl = activeTrack?.thumbnailUrl || (state.music.videoId ? getThumbnailUrl(state.music.videoId) : '');
 
-        elements.musicTitle.textContent = state.music.title || activeTrack?.title || 'No track loaded';
+        elements.musicTitle.textContent = state.music.title || activeTrack?.title || '불러온 곡이 없습니다';
         elements.musicCurrentMeta.textContent = activeTrack
-            ? `${getSafeTitle(activeTrack)} is ready to play.`
-            : 'Save favorite YouTube links and switch between them anytime.';
+            ? `${getSafeTitle(activeTrack)} 곡을 바로 재생할 수 있어요.`
+            : '좋아하는 유튜브 링크를 저장하고 언제든 바꿔 들을 수 있어요.';
 
         if (thumbnailUrl) {
             elements.musicThumbnail.src = thumbnailUrl;
-            elements.musicThumbnail.alt = state.music.title || activeTrack?.title || 'Selected YouTube track thumbnail';
+            elements.musicThumbnail.alt = state.music.title || activeTrack?.title || '선택한 유튜브 곡 썸네일';
             elements.musicThumbnail.hidden = false;
         } else {
             elements.musicThumbnail.hidden = true;
@@ -197,7 +197,7 @@ export function createMusicFeature({ state, saveState, elements }) {
             const thumbnail = document.createElement('img');
             thumbnail.className = 'music-library-thumb';
             thumbnail.src = track.thumbnailUrl || getThumbnailUrl(track.videoId);
-            thumbnail.alt = `${getSafeTitle(track)} thumbnail`;
+            thumbnail.alt = `${getSafeTitle(track)} 썸네일`;
 
             const info = document.createElement('div');
             info.className = 'music-library-info';
@@ -218,7 +218,7 @@ export function createMusicFeature({ state, saveState, elements }) {
             const playButton = document.createElement('button');
             playButton.type = 'button';
             playButton.className = 'music-library-btn';
-            playButton.textContent = 'Play';
+            playButton.textContent = '재생';
             playButton.addEventListener('click', async () => {
                 await selectTrack(track.id, true);
             });
@@ -226,7 +226,7 @@ export function createMusicFeature({ state, saveState, elements }) {
             const deleteButton = document.createElement('button');
             deleteButton.type = 'button';
             deleteButton.className = 'music-library-btn';
-            deleteButton.textContent = 'Remove';
+            deleteButton.textContent = '삭제';
             deleteButton.addEventListener('click', () => {
                 removeTrack(track.id);
             });
@@ -237,7 +237,7 @@ export function createMusicFeature({ state, saveState, elements }) {
         });
 
         const count = state.music.tracks.length;
-        elements.musicLibraryCount.textContent = `${count} saved`;
+        elements.musicLibraryCount.textContent = `${count}곡 저장됨`;
         elements.musicLibraryEmpty.hidden = count > 0;
     }
 
@@ -303,7 +303,7 @@ export function createMusicFeature({ state, saveState, elements }) {
         renderPreview();
         renderLibrary();
         renderTime(0, 0);
-        updateStatus(wasActive ? 'Track removed from saved list.' : 'Saved track removed.');
+        updateStatus(wasActive ? '현재 곡을 저장 목록에서 삭제했어요.' : '저장된 곡을 삭제했어요.');
     }
 
     async function ensurePlayer() {
@@ -353,7 +353,7 @@ export function createMusicFeature({ state, saveState, elements }) {
 
                         if (shouldAutoplayOnReady && state.music.videoId) {
                             player.playVideo();
-                            updateStatus(`Playing "${state.music.title || 'selected track'}" on loop.`);
+                            updateStatus(`"${state.music.title || '선택한 곡'}"을(를) 반복 재생하고 있어요.`);
                             shouldAutoplayOnReady = false;
                         }
 
@@ -376,7 +376,7 @@ export function createMusicFeature({ state, saveState, elements }) {
                                     player.playVideo();
                                 }
                             } else {
-                                updateStatus('Playback finished.');
+                                updateStatus('재생이 끝났어요.');
                             }
                         }
 
@@ -395,13 +395,13 @@ export function createMusicFeature({ state, saveState, elements }) {
                                 persistMusic();
                             }
 
-                            updateStatus(`Playing "${state.music.title || 'selected track'}"${state.music.isLooping ? ' on loop.' : '.'}`);
+                            updateStatus(`"${state.music.title || '선택한 곡'}"을(를)${state.music.isLooping ? ' 반복 재생 중이에요.' : ' 재생 중이에요.'}`);
                         }
 
                         if (event.data === YT.PlayerState.PAUSED) {
                             updateProgress();
                             stopProgressLoop();
-                            updateStatus('Playback paused.');
+                            updateStatus('재생을 잠시 멈췄어요.');
                         }
 
                         if (event.data === YT.PlayerState.BUFFERING) {
@@ -422,7 +422,7 @@ export function createMusicFeature({ state, saveState, elements }) {
         const videoId = extractVideoId(url);
 
         if (!videoId) {
-            updateStatus('That link does not look like a valid YouTube URL.');
+            updateStatus('유효한 유튜브 링크가 아닌 것 같아요.');
             elements.musicUrlInput.focus();
             return;
         }
@@ -436,9 +436,9 @@ export function createMusicFeature({ state, saveState, elements }) {
             title: '',
             thumbnailUrl: getThumbnailUrl(videoId)
         });
-        elements.musicTitle.textContent = 'Loading track...';
+        elements.musicTitle.textContent = '곡 불러오는 중...';
         elements.musicUrlInput.value = state.music.url;
-        updateStatus('Loading YouTube player...');
+        updateStatus('유튜브 플레이어를 불러오는 중이에요...');
         renderPreview();
         renderLibrary();
         persistMusic();
@@ -452,14 +452,14 @@ export function createMusicFeature({ state, saveState, elements }) {
                     player.loadVideoById(videoId);
                 } else if (typeof player.cueVideoById === 'function') {
                     player.cueVideoById(videoId);
-                    updateStatus('Track loaded. Press play when you are ready.');
+                    updateStatus('곡을 불러왔어요. 원할 때 재생해 주세요.');
                 }
 
                 syncVolume();
                 updateProgress();
             }
         } catch (error) {
-            updateStatus('Unable to load the YouTube player right now.');
+            updateStatus('지금은 유튜브 플레이어를 불러올 수 없어요.');
         }
     }
 
@@ -467,7 +467,7 @@ export function createMusicFeature({ state, saveState, elements }) {
         const track = state.music.tracks.find((item) => item.id === trackId);
 
         if (!track) {
-            updateStatus('Saved track could not be found.');
+            updateStatus('저장된 곡을 찾지 못했어요.');
             return;
         }
 
@@ -496,7 +496,7 @@ export function createMusicFeature({ state, saveState, elements }) {
             const url = elements.musicUrlInput.value.trim();
 
             if (!url) {
-                updateStatus('Paste a YouTube link first.');
+                updateStatus('먼저 유튜브 링크를 넣어 주세요.');
                 elements.musicUrlInput.focus();
                 return;
             }
@@ -524,7 +524,7 @@ export function createMusicFeature({ state, saveState, elements }) {
         elements.musicLoopInput.addEventListener('change', () => {
             state.music.isLooping = elements.musicLoopInput.checked;
             persistMusic();
-            updateStatus(state.music.isLooping ? 'Playlist loop is on.' : 'Playlist loop is off.');
+            updateStatus(state.music.isLooping ? '목록 반복 재생이 켜졌어요.' : '목록 반복 재생이 꺼졌어요.');
         });
 
         elements.musicVolumeInput.addEventListener('input', () => {
@@ -575,14 +575,14 @@ export function createMusicFeature({ state, saveState, elements }) {
                 const action = button.dataset.musicAction;
 
                 if (!state.music.videoId) {
-                    updateStatus('Load a YouTube link before using the player controls.');
+                    updateStatus('플레이어를 쓰려면 먼저 유튜브 링크를 불러와 주세요.');
                     return;
                 }
 
                 await ensurePlayer();
 
                 if (!isPlayerReady) {
-                    updateStatus('The player is still getting ready.');
+                    updateStatus('플레이어가 아직 준비 중이에요.');
                     return;
                 }
 
@@ -598,7 +598,7 @@ export function createMusicFeature({ state, saveState, elements }) {
                     player.stopVideo();
                     stopProgressLoop();
                     renderTime(0, typeof player.getDuration === 'function' ? player.getDuration() : 0);
-                    updateStatus('Playback stopped.');
+                    updateStatus('재생을 멈췄어요.');
                 }
             });
         });
@@ -606,11 +606,11 @@ export function createMusicFeature({ state, saveState, elements }) {
 
     async function restore() {
         if (!state.music.videoId) {
-            updateStatus('Paste a YouTube link to start a loopable background track.');
+            updateStatus('유튜브 링크를 넣으면 반복 배경음악을 시작할 수 있어요.');
             return;
         }
 
-        updateStatus('Restoring your last YouTube track...');
+        updateStatus('마지막으로 들은 곡을 복원하는 중이에요...');
 
         try {
             await ensurePlayer();
@@ -621,10 +621,10 @@ export function createMusicFeature({ state, saveState, elements }) {
                 renderPreview();
                 renderLibrary();
                 updateProgress();
-                updateStatus('Last track restored. Press play to resume.');
+                updateStatus('마지막 곡을 불러왔어요. 재생을 눌러 이어서 들을 수 있어요.');
             }
         } catch (error) {
-            updateStatus('Saved track found, but the YouTube player could not be restored.');
+            updateStatus('저장된 곡은 찾았지만 플레이어를 복원하지 못했어요.');
         }
     }
 

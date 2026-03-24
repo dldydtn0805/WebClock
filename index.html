@@ -6,19 +6,76 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="icon" href="favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="stylesheet" href="src/styles/main.css">
-    <title>Desk Clock Planner</title>
+    <link rel="stylesheet" href="src/styles/main.css?v=20260325-10">
+    <title>Web Clock Studio</title>
 </head>
 <body>
     <div class="page-shell">
         <main class="desk-app">
-            <section class="card music-card music-panel">
+            <section class="app-panel clock-panel">
+                <div class="card-head panel-head">
+                    <div>
+                        <p class="card-label">Clock</p>
+                        <h2>Focus Clock</h2>
+                    </div>
+                    <span class="panel-chip">Live</span>
+                </div>
+                <div class="clock-shell">
+                    <div class="clock-screen">
+                        <div class="clock-topline">
+                            <span class="status-dot"></span>
+                            <span class="status-label">Focus</span>
+                        </div>
+                        <div class="pixel-time">12:34</div>
+                        <div class="pixel-date">Thu, Mar 20</div>
+                        <section class="clock-weather-card" aria-label="Current weather">
+                            <div class="clock-weather-head">
+                                <div>
+                                    <p class="card-label">Weather</p>
+                                    <p id="weather-summary" class="weather-summary" aria-live="polite">서울 날씨 불러오는 중...</p>
+                                </div>
+                                <button type="button" class="weather-refresh-btn timer-btn ghost">
+                                    새로고침
+                                </button>
+                            </div>
+                            <p id="weather-meta" class="weather-meta">서울, 대한민국</p>
+                        </section>
+                        <div class="clock-footer">
+                            <div>
+                                <p class="greeting-text">오늘도 차분하게 이어가 보세요.</p>
+                                <p class="clock-caption">현재 시간이 항상 표시됩니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="buttons" aria-hidden="true">
+                        <div class="btn coral"></div>
+                        <div class="btn navy"></div>
+                    </div>
+                </div>
+                <div class="focus-strip">
+                    <section class="focus-card">
+                        <label class="card-label" for="focus-input">Today's Main Focus</label>
+                        <input
+                            id="focus-input"
+                            class="focus-input"
+                            type="text"
+                            maxlength="80"
+                            placeholder="오늘 가장 중요한 한 가지를 적어보세요"
+                        >
+                    </section>
+                </div>
+            </section>
+
+            <section class="app-panel music-card music-panel">
                 <div class="card-head">
-                    <h2 class="music-title">No track loaded</h2>
+                    <div>
+                        <p class="card-label">Music Player</p>
+                        <h2 class="music-title">불러온 곡이 없습니다</h2>
+                    </div>
                     <span class="music-badge">YouTube Loop</span>
                 </div>
                 <form class="music-form" novalidate>
-                    <label class="sr-only" for="music-url-input">YouTube URL</label>
+                    <label class="sr-only" for="music-url-input">유튜브 주소</label>
                     <input
                         id="music-url-input"
                         class="music-url-input"
@@ -27,9 +84,9 @@
                         autocapitalize="off"
                         autocorrect="off"
                         spellcheck="false"
-                        placeholder="Paste a YouTube link"
+                        placeholder="유튜브 링크를 붙여넣어 주세요"
                     >
-                    <button type="button" class="music-load-btn">Load</button>
+                    <button type="button" class="music-load-btn">불러오기</button>
                 </form>
                 <div class="music-preview">
                     <img
@@ -39,18 +96,18 @@
                         hidden
                     >
                     <div class="music-preview-copy">
-                        <p class="music-current-label">Now queued</p>
-                        <p class="music-current-meta">Save favorite YouTube links and switch between them anytime.</p>
+                        <p class="music-current-label">Now Queued</p>
+                        <p class="music-current-meta">좋아하는 유튜브 링크를 저장하고 언제든 바꿔 들을 수 있어요.</p>
                     </div>
                 </div>
-                <p class="music-status" aria-live="polite">Paste a YouTube link to start a loopable background track.</p>
+                <p class="music-status" aria-live="polite">유튜브 링크를 넣으면 배경음악처럼 반복 재생할 수 있어요.</p>
                 <div class="music-actions">
                     <button type="button" class="timer-btn primary" data-music-action="play">Play</button>
                     <button type="button" class="timer-btn" data-music-action="pause">Pause</button>
                     <button type="button" class="timer-btn ghost" data-music-action="stop">Stop</button>
                     <label class="music-loop-toggle">
                         <input id="music-loop-input" type="checkbox" checked>
-                        <span>Loop playlist</span>
+                        <span>Loop Playlist</span>
                     </label>
                 </div>
                 <div class="music-volume-row">
@@ -67,108 +124,17 @@
                 </div>
                 <div class="music-library-head">
                     <p class="card-label">Saved Tracks</p>
-                    <span class="music-library-count">0 saved</span>
+                    <span class="music-library-count">0곡 저장됨</span>
                 </div>
                 <ul class="music-library-list"></ul>
-                <p class="music-library-empty">No saved tracks yet. Load your first YouTube link to build a playlist.</p>
+                <p class="music-library-empty">아직 저장된 곡이 없어요. 첫 유튜브 링크를 불러와 목록을 만들어 보세요.</p>
                 <div class="music-player-slot" aria-hidden="true">
                     <div id="youtube-player"></div>
-                </div>
-            </section>
-
-            <section class="dashboard-panel">
-                <div class="top-row">
-                    <section class="card weather-card">
-                        <div class="card-head">
-                            <h2>Today's Weather</h2>
-                        </div>
-                        <div class="weather-panel">
-                            <section class="weather-game" aria-label="Weather dino mini game">
-                                <div class="weather-game-head">
-                                    <div>
-                                        <p class="weather-game-title">Weather Dino Run</p>
-                                        <p id="weather-game-status" class="weather-game-status">Checking the sky for your dinosaur...</p>
-                                    </div>
-                                    <div class="weather-game-actions">
-                                        <button type="button" class="weather-refresh-btn timer-btn ghost">
-                                            Refresh
-                                        </button>
-                                        <button
-                                            type="button"
-                                            class="weather-game-toggle timer-btn ghost"
-                                            aria-label="Pause weather game"
-                                        >
-                                            Pause
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="weather-game-stage">
-                                    <canvas
-                                        id="weather-game-canvas"
-                                        class="weather-game-canvas"
-                                        width="320"
-                                        height="150"
-                                        aria-label="A tiny dinosaur runner game that matches the current weather"
-                                    ></canvas>
-                                </div>
-                                <p id="weather-summary" class="weather-summary sr-only" aria-live="polite">Loading current weather...</p>
-                                <p id="weather-meta" class="weather-meta sr-only">Using your current location</p>
-                                <p id="weather-game-hint" class="weather-game-hint">
-                                    Tap the game or press space to jump. The dinosaur changes with the weather.
-                                </p>
-                            </section>
-                        </div>
-                    </section>
-                </div>
-
-                <div class="bottom-row">
-                    <section class="card todo-card">
-                        <div class="card-head">
-                            <h2>Tasks</h2>
-                            <span class="task-count">0 items</span>
-                        </div>
-                        <form class="todo-form">
-                            <input id="todo-input" type="text" maxlength="120" placeholder="Add a task for today">
-                            <button type="submit">Add</button>
-                        </form>
-                        <ul class="todo-list"></ul>
-                        <p class="empty-state">No tasks yet. Start with one clear next step.</p>
-                    </section>
-
-                    <section class="clock-panel">
-                        <div class="clock-shell">
-                            <div class="clock-screen">
-                                <div class="clock-topline">
-                                    <span class="status-dot"></span>
-                                    <span class="status-label">Focus</span>
-                                </div>
-                                <div class="pixel-time">12:34</div>
-                                <div class="pixel-date">Thu, Mar 20</div>
-                                <div class="clock-footer">
-                                    <div>
-                                        <p class="greeting-text">Have a steady day.</p>
-                                    </div>
-                                    <div>
-                                        <p class="completed-count">0 / 0</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="buttons">
-                                <div class="btn coral"></div>
-                                <div class="btn navy"></div>
-                            </div>
-                        </div>
-                        <div class="focus-strip">
-                            <section class="focus-card">
-                                <input id="focus-input" class="focus-input" type="text" maxlength="80" placeholder="Today's main focus">
-                            </section>
-                        </div>
-                    </section>
                 </div>
             </section>
         </main>
     </div>
 
-    <script type="module" src="src/js/app.js"></script>
+    <script type="module" src="src/js/app.js?v=20260325-10"></script>
 </body>
 </html>
