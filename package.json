@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "npm run sync-env && node scripts/build-static.mjs",
     "sync-env": "node scripts/generate-runtime-config.mjs",
     "prepare": "npm run sync-env",
     "test": "echo \"Error: no test specified\" && exit 1"

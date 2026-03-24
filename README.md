@@ -45,6 +45,10 @@ open index.html
 
 또는 Live Server 같은 정적 서버로 실행해도 됩니다.
 
+## Vercel
+
+Vercel 배포는 `npm run build`로 `public/` 폴더를 생성한 뒤 그 폴더를 배포합니다. 프로젝트 루트에 있는 [vercel.json](/Users/yongsoolee/Documents/GitHub/WebClock/vercel.json)에서 Output Directory를 `public`으로 고정해 두었습니다.
+
 ## Supabase
 
 테이블과 정책은 [shared_workspaces.sql](/Users/yongsoolee/Documents/GitHub/WebClock/supabase/shared_workspaces.sql)에 있습니다. Supabase SQL Editor에서 한 번 실행하면 됩니다.

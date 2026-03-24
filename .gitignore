@@ -3,3 +3,4 @@
 .env
 .env.local
 src/js/runtime-config.js
+public
