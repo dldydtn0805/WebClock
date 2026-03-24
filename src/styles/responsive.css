@@ -17,6 +17,15 @@
 }
 
 @media (max-width: 560px) {
+    .workspace-bar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .workspace-reset-btn {
+        width: 100%;
+    }
+
     .app-panel {
         padding: 20px;
         border-radius: 26px;

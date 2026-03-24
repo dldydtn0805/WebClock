@@ -7,6 +7,42 @@
     padding: 28px 0 44px;
 }
 
+body.is-workspace-locked .page-shell {
+    pointer-events: none;
+    user-select: none;
+    filter: blur(18px) saturate(0.9);
+}
+
+.workspace-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(244, 245, 247, 0.52);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.workspace-gate[hidden] {
+    display: none;
+}
+
+.workspace-gate-form {
+    width: min(100%, 460px);
+    display: grid;
+    gap: 16px;
+}
+
+.workspace-bar {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
 .desk-app {
     width: 100%;
     margin: 0 auto;
@@ -129,6 +165,7 @@
     align-items: center;
 }
 
+.workspace-bar > div:first-child,
 .clock-weather-head > div:first-child,
 .card-head > div:first-child {
     min-width: 0;

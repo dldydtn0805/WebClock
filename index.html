@@ -6,11 +6,40 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="icon" href="favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="stylesheet" href="src/styles/main.css?v=20260325-51">
+    <link rel="stylesheet" href="src/styles/main.css?v=20260325-53">
     <title>Web Clock Studio</title>
 </head>
 <body>
+    <div class="workspace-gate" hidden>
+        <form class="workspace-gate-form card" novalidate>
+            <p class="card-label">Shared Workspace</p>
+            <h1>개인 번호로 들어가기</h1>
+            <p class="workspace-gate-copy">
+                인증번호 없이, 같은 번호를 넣은 기기끼리 재생목록과 메인 포커스를 같이 써요.
+            </p>
+            <label class="sr-only" for="workspace-code-input">개인 번호</label>
+            <input
+                id="workspace-code-input"
+                class="workspace-code-input"
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel"
+                placeholder="전화번호처럼 기억하기 쉬운 숫자"
+            >
+            <button type="submit" class="timer-btn primary workspace-gate-submit">입장하기</button>
+            <p class="workspace-gate-note">같은 번호를 입력한 기기에서는 같은 재생목록을 이어서 볼 수 있어요.</p>
+            <p class="workspace-gate-error" aria-live="polite" hidden></p>
+        </form>
+    </div>
     <div class="page-shell">
+        <section class="workspace-bar card" aria-label="Workspace status">
+            <div>
+                <p class="card-label">Workspace</p>
+                <h2 class="workspace-code-display">번호 미연결</h2>
+                <p class="workspace-status" data-state="locked">번호를 연결하면 여러 기기에서 재생목록을 이어서 쓸 수 있어요.</p>
+            </div>
+            <button type="button" class="timer-btn ghost workspace-reset-btn" disabled>번호 바꾸기</button>
+        </section>
         <main class="desk-app">
             <section class="app-panel clock-panel">
                 <div class="card-head panel-head">
@@ -148,6 +177,14 @@
         </main>
     </div>
 
-    <script type="module" src="src/js/app.js?v=20260325-52"></script>
+    <script src="src/js/runtime-config.js?v=20260325-54"></script>
+    <script>
+        window.WEB_CLOCK_CONFIG = window.WEB_CLOCK_CONFIG || {
+            supabaseUrl: '',
+            supabaseAnonKey: '',
+            tableName: 'shared_workspaces'
+        };
+    </script>
+    <script type="module" src="src/js/app.js?v=20260325-53"></script>
 </body>
 </html>

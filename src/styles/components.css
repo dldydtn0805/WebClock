@@ -108,6 +108,44 @@
     line-height: 1.2;
 }
 
+.workspace-gate-form h1,
+.workspace-code-display {
+    margin: 6px 0 0;
+    font-size: clamp(1.5rem, 3vw, 1.95rem);
+    line-height: 1.12;
+    letter-spacing: -0.04em;
+}
+
+.workspace-gate-copy,
+.workspace-gate-note,
+.workspace-status {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+.workspace-gate-note {
+    font-size: 0.9rem;
+}
+
+.workspace-status[data-state="syncing"] {
+    color: var(--accent);
+}
+
+.workspace-status[data-state="error"] {
+    color: #b54747;
+}
+
+.workspace-status[data-state="local"] {
+    color: #8a5b00;
+}
+
+.workspace-gate-error {
+    margin: 0;
+    color: #b54747;
+    font-size: 0.92rem;
+}
+
 .clock-marquee {
     position: relative;
     width: 100%;
@@ -786,6 +824,7 @@ body.night-mode .btn {
 
 .focus-input,
 textarea,
+.workspace-code-input,
 .music-url-input,
 .timer-btn,
 .music-form button {
@@ -794,6 +833,7 @@ textarea,
 
 .focus-input,
 textarea,
+.workspace-code-input,
 .music-url-input {
     width: 100%;
     border: 1px solid var(--panel-border);
@@ -809,6 +849,7 @@ textarea,
 
 .focus-input:focus,
 textarea:focus,
+.workspace-code-input:focus,
 .music-url-input:focus {
     outline: none;
     border-color: var(--accent);

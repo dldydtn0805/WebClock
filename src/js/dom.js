@@ -1,6 +1,14 @@
 export function getAppElements() {
     return {
         body: document.body,
+        workspaceGate: document.querySelector('.workspace-gate'),
+        workspaceGateForm: document.querySelector('.workspace-gate-form'),
+        workspaceCodeInput: document.getElementById('workspace-code-input'),
+        workspaceGateSubmitButton: document.querySelector('.workspace-gate-submit'),
+        workspaceGateError: document.querySelector('.workspace-gate-error'),
+        workspaceCodeDisplay: document.querySelector('.workspace-code-display'),
+        workspaceStatus: document.querySelector('.workspace-status'),
+        workspaceResetButton: document.querySelector('.workspace-reset-btn'),
         time: document.querySelector('.pixel-time'),
         date: document.querySelector('.pixel-date'),
         clockTicker: document.querySelector('.clock-marquee'),

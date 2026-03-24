@@ -141,7 +141,7 @@ export function createWeatherFeature({ state, saveState, elements }) {
             state.weatherCode = weather.weather_code;
             state.weatherIsDay = weather.is_day === 1;
             state.weatherTemperature = getNumericTemperature(weather.temperature_2m);
-            saveState();
+            saveState({ touch: false, sync: false });
 
             renderWeather(elements, {
                 summary,

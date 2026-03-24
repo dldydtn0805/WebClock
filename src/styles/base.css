@@ -53,6 +53,10 @@ body {
     text-rendering: optimizeLegibility;
 }
 
+body.is-workspace-locked {
+    overflow: hidden;
+}
+
 body.night-mode {
     --bg-top: #111214;
     --bg-bottom: #1a1c20;
