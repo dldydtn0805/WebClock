@@ -69,14 +69,46 @@ export function createWorkspaceFeature({
     let syncPromise = null;
     let lastSyncedSnapshotKey = getSnapshotKey(getSharedStateSnapshot(state));
 
+    function renderLiveState(isConnected) {
+        if (!elements.workspaceLiveChip) {
+            return;
+        }
+
+        elements.workspaceLiveChip.textContent = isConnected ? 'live' : 'off';
+        elements.workspaceLiveChip.dataset.state = isConnected ? 'live' : 'off';
+    }
+
+    function openWorkspaceGate() {
+        elements.body.classList.add('is-workspace-locked');
+
+        if (elements.workspaceGate) {
+            elements.workspaceGate.hidden = false;
+        }
+
+        window.setTimeout(() => {
+            elements.workspaceCodeInput?.focus();
+            elements.workspaceCodeInput?.select();
+        }, 0);
+    }
+
+    function closeWorkspaceGate() {
+        elements.body.classList.remove('is-workspace-locked');
+
+        if (elements.workspaceGate) {
+            elements.workspaceGate.hidden = true;
+        }
+    }
+
     function renderWorkspaceHeader(code = currentAccessCode) {
         if (elements.workspaceCodeDisplay) {
-            elements.workspaceCodeDisplay.textContent = code ? formatAccessCode(code) : '번호 미연결';
+            elements.workspaceCodeDisplay.textContent = code ? formatAccessCode(code) : '로컬 모드';
         }
 
         if (elements.workspaceResetButton) {
-            elements.workspaceResetButton.disabled = !code;
+            elements.workspaceResetButton.textContent = code ? '로그아웃' : '로그인';
         }
+
+        renderLiveState(Boolean(code));
     }
 
     function renderStatus(message, stateName = 'idle') {
@@ -104,33 +136,17 @@ export function createWorkspaceFeature({
 
         if (elements.workspaceGateSubmitButton) {
             elements.workspaceGateSubmitButton.disabled = isBusy;
-            elements.workspaceGateSubmitButton.textContent = isBusy ? '연결 중...' : '입장하기';
+            elements.workspaceGateSubmitButton.textContent = isBusy ? '로그인 중...' : '로그인';
         }
     }
 
-    function lockWorkspace() {
-        elements.body.classList.add('is-workspace-locked');
-
-        if (elements.workspaceGate) {
-            elements.workspaceGate.hidden = false;
-        }
-
+    function renderDisconnectedState() {
+        currentAccessCode = '';
         renderWorkspaceHeader('');
-        renderStatus('번호를 연결하면 여러 기기에서 재생목록을 이어서 쓸 수 있어요.', 'locked');
-
-        window.setTimeout(() => {
-            elements.workspaceCodeInput?.focus();
-        }, 0);
-    }
-
-    function unlockWorkspace() {
-        elements.body.classList.remove('is-workspace-locked');
-
-        if (elements.workspaceGate) {
-            elements.workspaceGate.hidden = true;
-        }
-
-        renderWorkspaceHeader(currentAccessCode);
+        renderStatus(
+            '바로 사용 가능. 로그인하면 동기화됩니다.',
+            'local'
+        );
     }
 
     function updateLocalSyncTimestamp(updatedAt) {
@@ -193,7 +209,7 @@ export function createWorkspaceFeature({
 
         if (nextAccessCode.length < MIN_ACCESS_CODE_LENGTH) {
             renderGateError(`번호는 숫자 ${MIN_ACCESS_CODE_LENGTH}자리 이상으로 넣어 주세요.`);
-            lockWorkspace();
+            openWorkspaceGate();
             return false;
         }
 
@@ -205,7 +221,7 @@ export function createWorkspaceFeature({
         renderGateError('');
         renderWorkspaceHeader(nextAccessCode);
         setBusy(true);
-        unlockWorkspace();
+        closeWorkspaceGate();
 
         try {
             if (!hasRemoteSyncConfig()) {
@@ -275,9 +291,10 @@ export function createWorkspaceFeature({
         const savedAccessCode = normalizeAccessCode(localStorage.getItem(ACCESS_CODE_STORAGE_KEY) ?? '');
 
         renderWorkspaceHeader(savedAccessCode);
+        closeWorkspaceGate();
 
         if (!savedAccessCode) {
-            lockWorkspace();
+            renderDisconnectedState();
             return;
         }
 
@@ -294,6 +311,16 @@ export function createWorkspaceFeature({
             await connectWorkspace(elements.workspaceCodeInput?.value ?? '');
         });
 
+        elements.workspaceGateCancelButton?.addEventListener('click', () => {
+            renderGateError('');
+
+            if (elements.workspaceCodeInput) {
+                elements.workspaceCodeInput.value = currentAccessCode;
+            }
+
+            closeWorkspaceGate();
+        });
+
         elements.workspaceCodeInput?.addEventListener('input', () => {
             const normalized = normalizeAccessCode(elements.workspaceCodeInput.value);
             elements.workspaceCodeInput.value = normalized;
@@ -304,6 +331,12 @@ export function createWorkspaceFeature({
         });
 
         elements.workspaceResetButton?.addEventListener('click', () => {
+            if (!currentAccessCode) {
+                renderGateError('');
+                openWorkspaceGate();
+                return;
+            }
+
             currentAccessCode = '';
             localStorage.removeItem(ACCESS_CODE_STORAGE_KEY);
 
@@ -318,7 +351,8 @@ export function createWorkspaceFeature({
                 elements.workspaceCodeInput.value = '';
             }
 
-            lockWorkspace();
+            renderDisconnectedState();
+            closeWorkspaceGate();
         });
     }
 

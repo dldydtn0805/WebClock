@@ -35,6 +35,20 @@ body.is-workspace-locked .page-shell {
     gap: 16px;
 }
 
+.workspace-gate-actions {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+}
+
+.workspace-gate-actions .timer-btn {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
 .workspace-bar {
     margin-bottom: 20px;
     display: flex;
@@ -144,6 +158,16 @@ body.is-workspace-locked .page-shell {
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
+}
+
+.panel-chip[data-state="off"] {
+    background: rgba(104, 112, 120, 0.14);
+    color: var(--muted);
+}
+
+.panel-chip[data-state="live"] {
+    background: rgba(0, 113, 227, 0.1);
+    color: var(--accent);
 }
 
 .focus-strip,
