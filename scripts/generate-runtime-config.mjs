@@ -46,10 +46,17 @@ function parseEnvFile(filePath) {
     return parsed;
 }
 
-const env = envCandidates.reduce((accumulator, filePath) => ({
+const fileEnv = envCandidates.reduce((accumulator, filePath) => ({
     ...accumulator,
     ...parseEnvFile(filePath)
 }), {});
+
+const env = {
+    ...fileEnv,
+    SUPABASE_URL: process.env.SUPABASE_URL ?? fileEnv.SUPABASE_URL ?? '',
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ?? fileEnv.SUPABASE_ANON_KEY ?? '',
+    SUPABASE_TABLE: process.env.SUPABASE_TABLE ?? fileEnv.SUPABASE_TABLE ?? 'shared_workspaces'
+};
 
 const runtimeConfig = {
     supabaseUrl: env.SUPABASE_URL ?? '',

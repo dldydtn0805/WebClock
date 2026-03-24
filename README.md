@@ -13,7 +13,7 @@
 
 ## Env Setup
 
-브라우저는 `.env`를 직접 읽지 못해서, 실행 전에 `.env`를 브라우저용 설정 파일로 변환합니다.
+브라우저는 `.env`를 직접 읽지 못해서, 실행 전에 `.env` 또는 배포 환경변수를 브라우저용 설정 파일로 변환합니다.
 
 1. `.env.example`을 복사해서 `.env.local` 또는 `.env`를 만듭니다.
 2. 값을 채웁니다.
@@ -35,6 +35,8 @@ npm run sync-env
 ```
 
 생성 결과물은 `src/js/runtime-config.js`이고, git에는 포함되지 않습니다.
+
+Vercel에서는 `Environment Variables`에 넣은 값도 같은 스크립트가 읽습니다.
 
 ## Run
 
