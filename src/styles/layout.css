@@ -4,7 +4,7 @@
     flex: 0 1 auto;
     width: min(680px, calc(100% - 40px));
     margin: 0 auto;
-    padding: 28px 0 44px;
+    padding: 28px 0 calc(44px + var(--safe-area-bottom));
 }
 
 body.is-workspace-locked .page-shell {

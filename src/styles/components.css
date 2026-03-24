@@ -582,6 +582,9 @@ body.night-mode .btn {
     overflow-y: auto;
     overscroll-behavior: contain;
     padding-right: 6px;
+    padding-bottom: calc(16px + var(--safe-area-bottom));
+    scroll-padding-bottom: calc(16px + var(--safe-area-bottom));
+    -webkit-overflow-scrolling: touch;
 }
 
 .music-library-item {
@@ -607,6 +610,16 @@ body.night-mode .btn {
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.78),
         0 8px 18px rgba(15, 23, 42, 0.03);
+}
+
+.music-library-item.is-reorder-disabled {
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    cursor: default;
+    touch-action: auto;
+}
+
+.music-library-item.is-reorder-disabled .music-library-handle {
+    display: none;
 }
 
 .music-library-item.active {

@@ -5,7 +5,7 @@
 
     .page-shell {
         width: min(100% - 28px, 100%);
-        padding: 16px 0 28px;
+        padding: 16px 0 calc(28px + var(--safe-area-bottom));
     }
 
     .desk-app {
@@ -46,11 +46,22 @@
         border-radius: 24px;
     }
 
-    .music-form,
     .music-volume-row,
     .clock-weather-head {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .music-form {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .music-url-input {
+        flex: 1 1 auto;
+        min-width: 0;
     }
 
     .music-preview {
@@ -60,6 +71,10 @@
     .music-library-item {
         grid-template-columns: 24px minmax(0, 1fr);
         gap: 12px;
+    }
+
+    .music-library-item.is-reorder-disabled {
+        grid-template-columns: 1fr;
     }
 
     .music-library-handle {
@@ -72,6 +87,12 @@
     .music-library-info,
     .music-library-actions {
         grid-column: 2;
+    }
+
+    .music-library-item.is-reorder-disabled .music-library-thumb,
+    .music-library-item.is-reorder-disabled .music-library-info,
+    .music-library-item.is-reorder-disabled .music-library-actions {
+        grid-column: 1;
     }
 
     .music-thumbnail,
@@ -89,7 +110,9 @@
     }
 
     .music-form button {
-        min-height: 48px;
+        flex: 0 0 auto;
+        min-height: 44px;
+        padding: 0 16px;
     }
 
     .music-actions {

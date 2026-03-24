@@ -88,6 +88,16 @@ export function createMusicFeature({ state, saveState, elements }) {
     let pointerDragSession = null;
     let hasPendingReorder = false;
     let dragProxy = null;
+    let isReorderEnabled = true;
+
+    function getIsReorderEnabled() {
+        const isNarrowViewport = window.matchMedia?.('(max-width: 920px)').matches ?? false;
+        const hasCoarsePointer = window.matchMedia?.('(pointer: coarse)').matches ?? false;
+        const hasNoHover = window.matchMedia?.('(hover: none)').matches ?? false;
+        const hasTouchPoints = typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 0;
+
+        return !(isNarrowViewport && (hasCoarsePointer || hasNoHover || hasTouchPoints));
+    }
 
     function formatPlaybackTime(totalSeconds) {
         const safeSeconds = Math.max(0, Math.floor(totalSeconds || 0));
@@ -489,18 +499,23 @@ export function createMusicFeature({ state, saveState, elements }) {
     }
 
     function renderLibrary() {
+        isReorderEnabled = getIsReorderEnabled();
+        elements.musicLibraryList.dataset.reorderEnabled = String(isReorderEnabled);
         elements.musicLibraryList.innerHTML = '';
 
         state.music.tracks.forEach((track) => {
             const item = document.createElement('li');
-            item.className = `music-library-item${track.id === state.music.activeTrackId ? ' active' : ''}`;
+            item.className = `music-library-item${track.id === state.music.activeTrackId ? ' active' : ''}${isReorderEnabled ? '' : ' is-reorder-disabled'}`;
             item.draggable = false;
             item.dataset.trackId = track.id;
 
             const handle = document.createElement('span');
             handle.className = 'music-library-handle';
             handle.setAttribute('aria-hidden', 'true');
-            handle.title = '드래그해서 순서를 바꿀 수 있어요';
+            handle.hidden = !isReorderEnabled;
+            handle.title = isReorderEnabled
+                ? '드래그해서 순서를 바꿀 수 있어요'
+                : '모바일에서는 드래그 정렬이 꺼져 있어요';
             handle.draggable = false;
 
             const thumbnail = document.createElement('img');
@@ -543,7 +558,9 @@ export function createMusicFeature({ state, saveState, elements }) {
                 removeTrack(track.id);
             });
 
-            bindPointerReorder(item, track.id);
+            if (isReorderEnabled) {
+                bindPointerReorder(item, track.id);
+            }
             actions.append(playButton, deleteButton);
             item.append(handle, thumbnail, info, actions);
             elements.musicLibraryList.append(item);
@@ -805,6 +822,17 @@ export function createMusicFeature({ state, saveState, elements }) {
     }
 
     function bindEvents() {
+        window.addEventListener('resize', () => {
+            const nextIsReorderEnabled = getIsReorderEnabled();
+
+            if (nextIsReorderEnabled === isReorderEnabled) {
+                return;
+            }
+
+            clearDragState();
+            renderLibrary();
+        });
+
         async function handleLoad() {
             const url = elements.musicUrlInput.value.trim();
 
