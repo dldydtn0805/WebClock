@@ -22,6 +22,16 @@
         flex-direction: column;
     }
 
+    .confirm-dialog-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .confirm-dialog-actions .timer-btn {
+        width: 100%;
+        min-width: 0;
+    }
+
     .workspace-reset-btn {
         width: 100%;
     }

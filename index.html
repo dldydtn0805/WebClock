@@ -6,7 +6,7 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="icon" href="favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="stylesheet" href="src/styles/main.css?v=20260325-57">
+    <link rel="stylesheet" href="src/styles/main.css?v=20260325-63">
     <title>Web Clock Studio</title>
 </head>
 <body>
@@ -33,6 +33,23 @@
             <p class="workspace-gate-note">같은 번호를 입력한 기기에서는 같은 재생목록을 이어서 볼 수 있어요.</p>
             <p class="workspace-gate-error" aria-live="polite" hidden></p>
         </form>
+    </div>
+    <div class="confirm-dialog" hidden>
+        <div
+            class="confirm-dialog-panel card"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="confirm-dialog-title"
+            aria-describedby="confirm-dialog-message"
+        >
+            <p class="card-label">Playlist</p>
+            <h2 id="confirm-dialog-title">이 곡을 삭제할까요?</h2>
+            <p id="confirm-dialog-message" class="confirm-dialog-message"></p>
+            <div class="confirm-dialog-actions">
+                <button type="button" class="timer-btn ghost confirm-dialog-cancel">취소</button>
+                <button type="button" class="timer-btn confirm-dialog-confirm is-danger">삭제</button>
+            </div>
+        </div>
     </div>
     <div class="page-shell">
         <section class="workspace-bar card" aria-label="Workspace status">
@@ -180,7 +197,7 @@
         </main>
     </div>
 
-    <script src="src/js/runtime-config.js?v=20260325-57"></script>
+    <script src="src/js/runtime-config.js?v=20260325-63"></script>
     <script>
         window.WEB_CLOCK_CONFIG = window.WEB_CLOCK_CONFIG || {
             supabaseUrl: '',
@@ -188,6 +205,6 @@
             tableName: 'shared_workspaces'
         };
     </script>
-    <script type="module" src="src/js/app.js?v=20260325-57"></script>
+    <script type="module" src="src/js/app.js?v=20260325-63"></script>
 </body>
 </html>

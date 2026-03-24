@@ -25,12 +25,34 @@ body.is-workspace-locked .page-shell {
     -webkit-backdrop-filter: blur(18px);
 }
 
+.confirm-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(244, 245, 247, 0.44);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
 .workspace-gate[hidden] {
+    display: none;
+}
+
+.confirm-dialog[hidden] {
     display: none;
 }
 
 .workspace-gate-form {
     width: min(100%, 460px);
+    display: grid;
+    gap: 16px;
+}
+
+.confirm-dialog-panel {
+    width: min(100%, 420px);
     display: grid;
     gap: 16px;
 }
@@ -44,9 +66,21 @@ body.is-workspace-locked .page-shell {
     flex-wrap: nowrap;
 }
 
+.confirm-dialog-actions {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+}
+
 .workspace-gate-actions .timer-btn {
     flex: 1 1 0;
     min-width: 0;
+}
+
+.confirm-dialog-actions .timer-btn {
+    min-width: 112px;
 }
 
 .workspace-bar {

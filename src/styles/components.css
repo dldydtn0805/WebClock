@@ -116,12 +116,25 @@
     letter-spacing: -0.04em;
 }
 
+.confirm-dialog-panel h2 {
+    margin: 6px 0 0;
+    font-size: clamp(1.35rem, 3vw, 1.7rem);
+    line-height: 1.15;
+    letter-spacing: -0.04em;
+}
+
 .workspace-gate-copy,
 .workspace-gate-note,
 .workspace-status {
     margin: 0;
     color: var(--muted);
     line-height: 1.55;
+}
+
+.confirm-dialog-message {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
 }
 
 .workspace-gate-note {
@@ -869,6 +882,13 @@ textarea:focus,
     box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.14);
 }
 
+.workspace-code-input:focus {
+    border-color: rgba(15, 23, 42, 0.08);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.64),
+        0 10px 22px rgba(15, 23, 42, 0.05);
+}
+
 .clock-weather-card {
     margin-top: 26px;
     border: 1px solid var(--panel-border);
@@ -958,6 +978,13 @@ textarea:focus,
     box-shadow: 0 14px 26px rgba(0, 113, 227, 0.2);
 }
 
+.timer-btn.is-danger {
+    background: #b54747;
+    border-color: #b54747;
+    color: #fff;
+    box-shadow: 0 14px 26px rgba(181, 71, 71, 0.22);
+}
+
 .timer-btn.ghost {
     background: rgba(255, 255, 255, 0.82);
 }
@@ -965,6 +992,42 @@ textarea:focus,
 .timer-btn:hover {
     border-color: var(--accent);
     transform: translateY(-1px);
+}
+
+.confirm-dialog-actions .timer-btn {
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        transform 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.confirm-dialog-actions .timer-btn.ghost:hover {
+    background: rgba(232, 234, 238, 0.96);
+    border-color: rgba(15, 23, 42, 0.08);
+    color: var(--text);
+}
+
+.confirm-dialog-actions .timer-btn.is-danger:hover {
+    background: #9f3a3a;
+    border-color: #9f3a3a;
+    color: #fff;
+}
+
+.workspace-reset-btn:hover,
+.workspace-gate-actions .timer-btn.ghost:hover,
+.weather-refresh-btn:hover {
+    background: rgba(232, 234, 238, 0.96);
+    border-color: rgba(15, 23, 42, 0.08);
+    color: var(--text);
+}
+
+.workspace-gate-actions .timer-btn.primary:hover {
+    background: var(--accent-deep);
+    border-color: var(--accent-deep);
+    color: #fff;
+    box-shadow: 0 16px 28px rgba(0, 113, 227, 0.24);
 }
 
 .music-panel,

@@ -89,6 +89,8 @@ export function createMusicFeature({ state, saveState, elements }) {
     let hasPendingReorder = false;
     let dragProxy = null;
     let isReorderEnabled = true;
+    let activeConfirmResolver = null;
+    let confirmTriggerElement = null;
 
     function getIsReorderEnabled() {
         const isNarrowViewport = window.matchMedia?.('(max-width: 920px)').matches ?? false;
@@ -554,7 +556,11 @@ export function createMusicFeature({ state, saveState, elements }) {
             deleteButton.className = 'music-library-btn is-delete-btn';
             deleteButton.textContent = '삭제';
             deleteButton.dataset.hoverLabel = ':(';
-            deleteButton.addEventListener('click', () => {
+            deleteButton.addEventListener('click', async () => {
+                if (!await confirmRemoveTrack(track, deleteButton)) {
+                    return;
+                }
+
                 removeTrack(track.id);
             });
 
@@ -581,6 +587,47 @@ export function createMusicFeature({ state, saveState, elements }) {
         state.music.tracks = state.music.tracks.map((track) => (
             track.id === trackId ? { ...track, ...patch } : track
         ));
+    }
+
+    function closeConfirmDialog(confirmed) {
+        if (!activeConfirmResolver) {
+            return;
+        }
+
+        const resolve = activeConfirmResolver;
+        activeConfirmResolver = null;
+        elements.confirmDialog.hidden = true;
+        resolve(confirmed);
+        confirmTriggerElement?.focus();
+        confirmTriggerElement = null;
+    }
+
+    function confirmRemoveTrack(track, triggerElement) {
+        if (
+            !elements.confirmDialog
+            || !elements.confirmDialogTitle
+            || !elements.confirmDialogMessage
+            || !elements.confirmDialogCancelButton
+            || !elements.confirmDialogConfirmButton
+        ) {
+            return Promise.resolve(window.confirm(`"${getSafeTitle(track)}" 곡을 재생목록에서 삭제할까요?`));
+        }
+
+        if (activeConfirmResolver) {
+            closeConfirmDialog(false);
+        }
+
+        confirmTriggerElement = triggerElement instanceof HTMLElement ? triggerElement : null;
+        elements.confirmDialogTitle.textContent = '이 곡을 삭제할까요?';
+        elements.confirmDialogMessage.textContent = `"${getSafeTitle(track)}" 곡이 재생목록에서 사라져요.`;
+        elements.confirmDialog.hidden = false;
+
+        return new Promise((resolve) => {
+            activeConfirmResolver = resolve;
+            window.requestAnimationFrame(() => {
+                elements.confirmDialogConfirmButton.focus();
+            });
+        });
     }
 
     function upsertTrack(track) {
@@ -822,6 +869,26 @@ export function createMusicFeature({ state, saveState, elements }) {
     }
 
     function bindEvents() {
+        elements.confirmDialogCancelButton?.addEventListener('click', () => {
+            closeConfirmDialog(false);
+        });
+
+        elements.confirmDialogConfirmButton?.addEventListener('click', () => {
+            closeConfirmDialog(true);
+        });
+
+        elements.confirmDialog?.addEventListener('click', (event) => {
+            if (event.target === elements.confirmDialog) {
+                closeConfirmDialog(false);
+            }
+        });
+
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && activeConfirmResolver) {
+                closeConfirmDialog(false);
+            }
+        });
+
         window.addEventListener('resize', () => {
             const nextIsReorderEnabled = getIsReorderEnabled();
 
