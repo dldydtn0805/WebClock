@@ -3,7 +3,7 @@ import {
     LAST_WORKSPACE_CODE_STORAGE_KEY,
     MIN_ACCESS_CODE_LENGTH
 } from '../config.js?v=20260325-53';
-import { applySharedState, getSharedStateSnapshot } from '../state.js?v=20260325-53';
+import { applySharedState, getSharedStateSnapshot } from '../state.js?v=20260326-69';
 import {
     fetchSharedWorkspace,
     hasRemoteSyncConfig,

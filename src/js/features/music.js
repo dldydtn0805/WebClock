@@ -79,8 +79,9 @@ function extractVideoId(rawValue) {
 export function createMusicFeature({ state, saveState, elements }) {
     let player = null;
     let isPlayerReady = false;
-    let shouldAutoplayOnReady = false;
     let progressIntervalId = null;
+    let autoplayFallbackTimerId = 0;
+    let pendingAutoplayVideoId = '';
     let isSeeking = false;
     let draggedTrackId = '';
     let dropTargetTrackId = '';
@@ -119,7 +120,16 @@ export function createMusicFeature({ state, saveState, elements }) {
 
         if (!state.music.videoId && elements.clockTicker) {
             elements.clockTicker.dataset.tickerMode = 'default';
+            elements.clockTicker.dataset.tickerPlayback = 'playing';
         }
+    }
+
+    function setClockTickerPlaybackState(isPlaying) {
+        if (!elements.clockTicker) {
+            return;
+        }
+
+        elements.clockTicker.dataset.tickerPlayback = isPlaying ? 'playing' : 'paused';
     }
 
     function getPlaybackStatusMessage() {
@@ -128,8 +138,8 @@ export function createMusicFeature({ state, saveState, elements }) {
             : '오늘 해야 할 일을 차분히 이어가고 있어요.';
     }
 
-    function persistMusic() {
-        saveState();
+    function persistMusic(options = {}) {
+        saveState(options);
     }
 
     function getSafeTitle(track) {
@@ -153,6 +163,59 @@ export function createMusicFeature({ state, saveState, elements }) {
 
         const nextIndex = (activeIndex + 1) % state.music.tracks.length;
         return state.music.tracks[nextIndex] || null;
+    }
+
+    function getCurrentPlaybackTime() {
+        if (!player || !isPlayerReady || typeof player.getCurrentTime !== 'function') {
+            return 0;
+        }
+
+        return player.getCurrentTime();
+    }
+
+    function getPlayerDuration() {
+        if (!player || !isPlayerReady || typeof player.getDuration !== 'function') {
+            return 0;
+        }
+
+        return player.getDuration();
+    }
+
+    function getPlayerState() {
+        if (!player || !isPlayerReady || typeof player.getPlayerState !== 'function') {
+            return null;
+        }
+
+        return player.getPlayerState();
+    }
+
+    function getIsClockMusicPlaying() {
+        const playerState = getPlayerState();
+
+        return playerState === window.YT?.PlayerState?.PLAYING
+            || playerState === window.YT?.PlayerState?.BUFFERING;
+    }
+
+    function renderClockMusicToggleButton() {
+        if (!elements.clockMusicToggleButton) {
+            return;
+        }
+
+        const hasTrack = Boolean(state.music.videoId);
+        const isPlaying = hasTrack && getIsClockMusicPlaying();
+        const buttonLabel = !hasTrack
+            ? '재생할 곡이 아직 없어요'
+            : (isPlaying ? '음악 정지' : '최근 곡 재생');
+        const buttonText = elements.clockMusicToggleButton.querySelector('.sr-only');
+
+        elements.clockMusicToggleButton.disabled = !hasTrack;
+        elements.clockMusicToggleButton.dataset.state = isPlaying ? 'playing' : 'idle';
+        elements.clockMusicToggleButton.setAttribute('aria-label', buttonLabel);
+        elements.clockMusicToggleButton.title = buttonLabel;
+
+        if (buttonText) {
+            buttonText.textContent = buttonLabel;
+        }
     }
 
     function setVolumeLabel() {
@@ -196,20 +259,65 @@ export function createMusicFeature({ state, saveState, elements }) {
         }
     }
 
-    function updateProgress() {
-        if (!player || !isPlayerReady) {
-            renderTime(0, 0);
+    function clearAutoplayFallback() {
+        if (autoplayFallbackTimerId) {
+            window.clearTimeout(autoplayFallbackTimerId);
+            autoplayFallbackTimerId = 0;
+        }
+
+        pendingAutoplayVideoId = '';
+    }
+
+    function scheduleAutoplayFallback(videoId, source = 'manual') {
+        clearAutoplayFallback();
+
+        if (!videoId) {
             return;
         }
 
-        const currentSeconds = typeof player.getCurrentTime === 'function'
-            ? player.getCurrentTime()
-            : 0;
-        const durationSeconds = typeof player.getDuration === 'function'
-            ? player.getDuration()
-            : 0;
+        pendingAutoplayVideoId = videoId;
+        autoplayFallbackTimerId = window.setTimeout(() => {
+            autoplayFallbackTimerId = 0;
+
+            if (pendingAutoplayVideoId !== videoId) {
+                return;
+            }
+
+            const playerState = typeof player?.getPlayerState === 'function'
+                ? player.getPlayerState()
+                : null;
+
+            if (playerState === window.YT?.PlayerState?.PLAYING) {
+                clearAutoplayFallback();
+                return;
+            }
+
+            if (typeof player?.cueVideoById === 'function') {
+                player.cueVideoById(videoId);
+            }
+
+            updateProgress();
+            updateStatus(
+                source === 'restore'
+                    ? '자동 재생이 브라우저에서 막혔어요. 재생 버튼을 누르면 바로 이어져요.'
+                    : '자동 재생이 막혀서 곡만 준비해 뒀어요. 재생 버튼을 눌러 주세요.'
+            );
+            pendingAutoplayVideoId = '';
+        }, 2500);
+    }
+
+    function updateProgress() {
+        if (!player || !isPlayerReady) {
+            renderTime(0, 0);
+            renderClockMusicToggleButton();
+            return;
+        }
+
+        const currentSeconds = getCurrentPlaybackTime();
+        const durationSeconds = getPlayerDuration();
 
         renderTime(currentSeconds, durationSeconds);
+        renderClockMusicToggleButton();
     }
 
     function startProgressLoop() {
@@ -226,6 +334,7 @@ export function createMusicFeature({ state, saveState, elements }) {
         elements.musicCurrentMeta.textContent = activeTrack
             ? `${getSafeTitle(activeTrack)} 곡을 바로 재생할 수 있어요.`
             : '좋아하는 유튜브 링크를 저장하고 언제든 바꿔 들을 수 있어요.';
+        renderClockMusicToggleButton();
 
         if (thumbnailUrl) {
             elements.musicThumbnail.src = thumbnailUrl;
@@ -669,6 +778,7 @@ export function createMusicFeature({ state, saveState, elements }) {
         }
 
         if (wasActive && player && isPlayerReady) {
+            clearAutoplayFallback();
             if (state.music.videoId && typeof player.cueVideoById === 'function') {
                 player.cueVideoById(state.music.videoId);
             } else if (typeof player.stopVideo === 'function') {
@@ -728,12 +838,6 @@ export function createMusicFeature({ state, saveState, elements }) {
                             }
                         }
 
-                        if (shouldAutoplayOnReady && state.music.videoId) {
-                            player.playVideo();
-                            updateStatus('집중 세션을 시작했어요.');
-                            shouldAutoplayOnReady = false;
-                        }
-
                         resolve(player);
                     },
                     onStateChange: (event) => {
@@ -742,7 +846,10 @@ export function createMusicFeature({ state, saveState, elements }) {
                         }
 
                         if (event.data === YT.PlayerState.ENDED) {
+                            clearAutoplayFallback();
+                            setClockTickerPlaybackState(false);
                             updateProgress();
+                            renderClockMusicToggleButton();
                             if (state.music.isLooping) {
                                 const nextTrack = getNextTrack();
 
@@ -758,7 +865,10 @@ export function createMusicFeature({ state, saveState, elements }) {
                         }
 
                         if (event.data === YT.PlayerState.PLAYING) {
+                            clearAutoplayFallback();
+                            setClockTickerPlaybackState(true);
                             startProgressLoop();
+                            renderClockMusicToggleButton();
                             const data = player.getVideoData?.();
 
                             if (data?.title && data.title !== state.music.title) {
@@ -776,18 +886,23 @@ export function createMusicFeature({ state, saveState, elements }) {
                         }
 
                         if (event.data === YT.PlayerState.PAUSED) {
+                            setClockTickerPlaybackState(false);
                             updateProgress();
                             stopProgressLoop();
+                            renderClockMusicToggleButton();
                             updateStatus('잠깐 멈춰도 괜찮아요. 준비되면 다시 이어가요.');
                         }
 
                         if (event.data === YT.PlayerState.BUFFERING) {
                             updateProgress();
+                            renderClockMusicToggleButton();
                         }
 
                         if (event.data === YT.PlayerState.CUED) {
+                            setClockTickerPlaybackState(false);
                             updateProgress();
                             stopProgressLoop();
+                            renderClockMusicToggleButton();
                         }
                     }
                 }
@@ -821,12 +936,16 @@ export function createMusicFeature({ state, saveState, elements }) {
         persistMusic();
 
         try {
-            shouldAutoplayOnReady = autoplay;
             await ensurePlayer();
 
             if (isPlayerReady) {
+                clearAutoplayFallback();
+                setClockTickerPlaybackState(false);
+
                 if (autoplay) {
                     player.loadVideoById(videoId);
+                    scheduleAutoplayFallback(videoId);
+                    updateStatus('집중 세션을 시작했어요.');
                 } else if (typeof player.cueVideoById === 'function') {
                     player.cueVideoById(videoId);
                     updateStatus('준비됐어요. 원할 때 바로 재생해요.');
@@ -847,15 +966,6 @@ export function createMusicFeature({ state, saveState, elements }) {
             updateStatus('저장된 곡을 찾지 못했어요.');
             return;
         }
-
-        state.music.activeTrackId = track.id;
-        state.music.url = track.url;
-        state.music.videoId = track.videoId;
-        state.music.title = track.title || '';
-        elements.musicUrlInput.value = track.url;
-        renderPreview();
-        renderLibrary();
-        persistMusic();
         await loadTrack(track.url, autoplay);
     }
 
@@ -866,6 +976,7 @@ export function createMusicFeature({ state, saveState, elements }) {
         setVolumeLabel();
         renderPreview();
         renderLibrary();
+        renderClockMusicToggleButton();
     }
 
     function bindEvents() {
@@ -936,6 +1047,37 @@ export function createMusicFeature({ state, saveState, elements }) {
             updateStatus(state.music.isLooping ? '반복 재생으로 집중 흐름을 이어가요.' : '한 곡씩 차분히 재생할게요.');
         });
 
+        elements.clockMusicToggleButton?.addEventListener('click', async () => {
+            if (!state.music.videoId) {
+                updateStatus('먼저 재생할 유튜브 곡을 불러와 주세요.');
+                renderClockMusicToggleButton();
+                return;
+            }
+
+            await ensurePlayer();
+
+            if (!isPlayerReady) {
+                updateStatus('플레이어가 아직 준비 중이에요.');
+                renderClockMusicToggleButton();
+                return;
+            }
+
+            if (getIsClockMusicPlaying()) {
+                clearAutoplayFallback();
+                setClockTickerPlaybackState(false);
+                player.stopVideo();
+                stopProgressLoop();
+                renderTime(0, getPlayerDuration());
+                updateStatus('음악을 멈췄어요. 필요한 만큼 조용히 집중해요.');
+                renderClockMusicToggleButton();
+                return;
+            }
+
+            player.playVideo();
+            updateStatus('집중 세션을 시작했어요.');
+            renderClockMusicToggleButton();
+        });
+
         elements.musicVolumeInput.addEventListener('input', () => {
             state.music.volume = Number(elements.musicVolumeInput.value);
             setVolumeLabel();
@@ -1004,9 +1146,10 @@ export function createMusicFeature({ state, saveState, elements }) {
                 }
 
                 if (action === 'stop') {
+                    clearAutoplayFallback();
                     player.stopVideo();
                     stopProgressLoop();
-                    renderTime(0, typeof player.getDuration === 'function' ? player.getDuration() : 0);
+                    renderTime(0, getPlayerDuration());
                     updateStatus('음악을 멈췄어요. 필요한 만큼 조용히 집중해요.');
                 }
             });
@@ -1025,12 +1168,15 @@ export function createMusicFeature({ state, saveState, elements }) {
             await ensurePlayer();
 
             if (isPlayerReady) {
+                clearAutoplayFallback();
+                setClockTickerPlaybackState(false);
                 player.cueVideoById(state.music.videoId);
                 syncVolume();
                 renderPreview();
                 renderLibrary();
+                renderTime(0, getPlayerDuration());
                 updateProgress();
-                updateStatus('마지막 집중 흐름을 복원했어요. 바로 이어가면 돼요.');
+                updateStatus('마지막으로 듣던 곡을 준비해 뒀어요. 초록 버튼이나 재생 버튼을 눌러 시작해요.');
             }
         } catch (error) {
             updateStatus('저장된 곡은 찾았지만 플레이어를 복원하지 못했어요.');

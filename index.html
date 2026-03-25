@@ -6,7 +6,7 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="icon" href="favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="stylesheet" href="src/styles/main.css?v=20260325-63">
+    <link rel="stylesheet" href="src/styles/main.css?v=20260326-65">
     <title>Web Clock Studio</title>
 </head>
 <body>
@@ -85,9 +85,6 @@
                                     <p class="card-label">Weather</p>
                                     <p id="weather-summary" class="weather-summary" aria-live="polite">서울 날씨 불러오는 중...</p>
                                 </div>
-                                <button type="button" class="weather-refresh-btn timer-btn ghost">
-                                    새로고침
-                                </button>
                             </div>
                             <p id="weather-meta" class="weather-meta">서울, 대한민국</p>
                         </section>
@@ -100,9 +97,29 @@
                             </div>
                         </div>
                     </div>
-                    <div class="buttons" aria-hidden="true">
-                        <div class="btn coral"></div>
-                        <div class="btn navy"></div>
+                    <div class="buttons">
+                        <button
+                            id="clock-weather-refresh-button"
+                            type="button"
+                            class="btn coral"
+                            data-state="idle"
+                            aria-label="날씨 새로고침"
+                            title="날씨 새로고침"
+                        >
+                            <span class="btn-icon btn-icon-weather" aria-hidden="true"></span>
+                            <span class="sr-only">날씨 새로고침</span>
+                        </button>
+                        <button
+                            id="clock-music-toggle-button"
+                            type="button"
+                            class="btn navy"
+                            data-state="idle"
+                            aria-label="최근 곡 재생"
+                            title="최근 곡 재생"
+                        >
+                            <span class="btn-icon btn-icon-music" aria-hidden="true"></span>
+                            <span class="sr-only">최근 곡 재생</span>
+                        </button>
                     </div>
                 </div>
                 <div class="focus-strip">
@@ -205,6 +222,6 @@
             tableName: 'shared_workspaces'
         };
     </script>
-    <script type="module" src="src/js/app.js?v=20260325-63"></script>
+    <script type="module" src="src/js/app.js?v=20260326-68"></script>
 </body>
 </html>

@@ -174,6 +174,10 @@
     animation: clock-marquee-slide 18s linear infinite;
 }
 
+.clock-marquee[data-ticker-mode="music"][data-ticker-playback="paused"] .clock-marquee-track {
+    animation-play-state: paused;
+}
+
 .clock-marquee-text {
     flex: 0 0 auto;
     padding-right: 44px;
@@ -195,11 +199,20 @@
 }
 
 .btn {
-    width: 14px;
-    height: 14px;
+    appearance: none;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
     border-radius: 50%;
     border: 0;
+    cursor: pointer;
+    transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    isolation: isolate;
 }
 
 .btn.coral {
@@ -208,6 +221,152 @@
 
 .btn.navy {
     background: #28c840;
+}
+
+.buttons .btn:hover {
+    transform: translateY(-1px) scale(1.08);
+}
+
+.buttons .btn:focus-visible {
+    outline: 2px solid rgba(0, 113, 227, 0.28);
+    outline-offset: 4px;
+}
+
+.buttons .btn:disabled {
+    cursor: default;
+    opacity: 0.52;
+    transform: none;
+}
+
+.btn.navy[data-state="playing"] {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.44),
+        0 0 0 2px rgba(40, 200, 64, 0.14);
+}
+
+.btn.navy[data-state="playing"] .btn-icon-music {
+    color: rgba(216, 255, 224, 0.96);
+}
+
+.btn.navy[data-state="playing"]::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    z-index: -2;
+    border-radius: inherit;
+    background:
+        radial-gradient(circle,
+            rgba(156, 255, 176, 0.34) 0%,
+            rgba(156, 255, 176, 0.2) 46%,
+            transparent 74%);
+    filter: blur(1px);
+    opacity: 0.92;
+    pointer-events: none;
+}
+
+.btn.navy[data-state="playing"]::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    z-index: -1;
+    border-radius: inherit;
+    border: 2px solid rgba(156, 255, 176, 0.68);
+    box-shadow:
+        0 0 0 1px rgba(156, 255, 176, 0.14),
+        0 0 18px rgba(156, 255, 176, 0.28);
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.84);
+    transform-origin: center;
+    animation: clock-music-pulse 1.75s cubic-bezier(0.2, 0.65, 0.2, 1) infinite;
+}
+
+.btn-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 10px;
+    height: 10px;
+    color: rgba(255, 255, 255, 0.96);
+}
+
+.btn-icon-weather::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow:
+        0 -4px 0 -2px currentColor,
+        0 4px 0 -2px currentColor,
+        4px 0 0 -2px currentColor,
+        -4px 0 0 -2px currentColor,
+        3px 3px 0 -2px currentColor,
+        -3px 3px 0 -2px currentColor,
+        3px -3px 0 -2px currentColor,
+        -3px -3px 0 -2px currentColor;
+}
+
+.btn-icon-music::before {
+    content: '';
+    width: 0;
+    height: 0;
+    margin-left: 1px;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 8px solid currentColor;
+}
+
+.btn.navy[data-state="playing"] .btn-icon-music::before {
+    width: 8px;
+    height: 8px;
+    margin-left: 0;
+    border: 0;
+    background: currentColor;
+    border-radius: 2px;
+}
+
+.btn.coral[data-state="loading"] .btn-icon-weather {
+    animation: clock-weather-spin 0.9s linear infinite;
+}
+
+@keyframes clock-weather-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes clock-music-pulse {
+    0% {
+        transform: scale(0.84);
+        opacity: 0;
+    }
+
+    18% {
+        opacity: 0.82;
+    }
+
+    62% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn.navy[data-state="playing"]::after {
+        animation: none;
+        opacity: 0.7;
+    }
 }
 
 body.night-mode .clock-panel {

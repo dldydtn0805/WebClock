@@ -12,6 +12,9 @@ export function setClockTickerMessage(elements, message, mode = 'default') {
     }
 
     elements.clockTicker.dataset.tickerMode = mode;
+    if (mode !== 'music') {
+        elements.clockTicker.dataset.tickerPlayback = 'playing';
+    }
     elements.clockTickerTexts.forEach((element) => {
         element.textContent = message;
     });

@@ -20,6 +20,8 @@ export function getAppElements() {
         date: document.querySelector('.pixel-date'),
         clockTicker: document.querySelector('.clock-marquee'),
         clockTickerTexts: document.querySelectorAll('.clock-marquee-text'),
+        clockWeatherRefreshButton: document.getElementById('clock-weather-refresh-button'),
+        clockMusicToggleButton: document.getElementById('clock-music-toggle-button'),
         weatherSummary: document.getElementById('weather-summary'),
         weatherMeta: document.getElementById('weather-meta'),
         weatherRefreshButton: document.querySelector('.weather-refresh-btn'),

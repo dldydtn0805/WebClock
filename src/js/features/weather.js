@@ -52,15 +52,27 @@ function getNumericTemperature(value) {
 }
 
 function renderWeather(elements, { summary, meta, isError = false, isLoading = false }) {
-    if (!elements.weatherSummary || !elements.weatherMeta || !elements.weatherRefreshButton) {
+    if (!elements.weatherSummary || !elements.weatherMeta) {
         return;
     }
 
     elements.weatherSummary.textContent = summary;
     elements.weatherMeta.textContent = meta;
     elements.weatherSummary.dataset.state = isError ? 'error' : (isLoading ? 'loading' : 'ready');
-    elements.weatherRefreshButton.disabled = isLoading;
-    elements.weatherRefreshButton.textContent = isLoading ? '불러오는 중...' : '새로고침';
+    if (elements.weatherRefreshButton) {
+        elements.weatherRefreshButton.disabled = isLoading;
+        elements.weatherRefreshButton.textContent = isLoading ? '불러오는 중...' : '새로고침';
+    }
+
+    if (elements.clockWeatherRefreshButton) {
+        elements.clockWeatherRefreshButton.disabled = isLoading;
+        elements.clockWeatherRefreshButton.dataset.state = isLoading ? 'loading' : 'idle';
+        elements.clockWeatherRefreshButton.setAttribute(
+            'aria-label',
+            isLoading ? '날씨 불러오는 중' : '날씨 새로고침'
+        );
+        elements.clockWeatherRefreshButton.title = isLoading ? '날씨 불러오는 중' : '날씨 새로고침';
+    }
 }
 
 function getWeatherErrorMeta(error) {
@@ -98,7 +110,7 @@ async function fetchWeather(latitude, longitude) {
 
 export function createWeatherFeature({ state, saveState, elements }) {
     function hydrate() {
-        if (!elements.weatherSummary || !elements.weatherMeta || !elements.weatherRefreshButton) {
+        if (!elements.weatherSummary || !elements.weatherMeta) {
             return;
         }
 
@@ -157,11 +169,15 @@ export function createWeatherFeature({ state, saveState, elements }) {
     }
 
     function bindEvents() {
-        if (!elements.weatherRefreshButton) {
+        if (!elements.weatherRefreshButton && !elements.clockWeatherRefreshButton) {
             return;
         }
 
-        elements.weatherRefreshButton.addEventListener('click', () => {
+        elements.weatherRefreshButton?.addEventListener('click', () => {
+            refreshWeather();
+        });
+
+        elements.clockWeatherRefreshButton?.addEventListener('click', () => {
             refreshWeather();
         });
     }
