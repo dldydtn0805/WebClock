@@ -205,7 +205,7 @@ export function createMusicFeature({ state, saveState, elements }) {
         const isPlaying = hasTrack && getIsClockMusicPlaying();
         const buttonLabel = !hasTrack
             ? '재생할 곡이 아직 없어요'
-            : (isPlaying ? '음악 정지' : '최근 곡 재생');
+            : (isPlaying ? '일시정지' : '최근 곡 재생');
         const buttonText = elements.clockMusicToggleButton.querySelector('.sr-only');
 
         elements.clockMusicToggleButton.disabled = !hasTrack;
@@ -1064,11 +1064,7 @@ export function createMusicFeature({ state, saveState, elements }) {
 
             if (getIsClockMusicPlaying()) {
                 clearAutoplayFallback();
-                setClockTickerPlaybackState(false);
-                player.stopVideo();
-                stopProgressLoop();
-                renderTime(0, getPlayerDuration());
-                updateStatus('음악을 멈췄어요. 필요한 만큼 조용히 집중해요.');
+                player.pauseVideo();
                 renderClockMusicToggleButton();
                 return;
             }

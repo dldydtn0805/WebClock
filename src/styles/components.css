@@ -318,13 +318,29 @@
     border-left: 8px solid currentColor;
 }
 
-.btn.navy[data-state="playing"] .btn-icon-music::before {
-    width: 8px;
+.btn-icon-music::after {
+    content: none;
+}
+
+.btn.navy[data-state="playing"] .btn-icon-music::before,
+.btn.navy[data-state="playing"] .btn-icon-music::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    width: 3px;
     height: 8px;
     margin-left: 0;
     border: 0;
     background: currentColor;
-    border-radius: 2px;
+    border-radius: 1px;
+}
+
+.btn.navy[data-state="playing"] .btn-icon-music::before {
+    left: 1px;
+}
+
+.btn.navy[data-state="playing"] .btn-icon-music::after {
+    right: 1px;
 }
 
 .btn.coral[data-state="loading"] .btn-icon-weather {
