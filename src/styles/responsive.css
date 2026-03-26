@@ -1,4 +1,8 @@
 @media (max-width: 920px) {
+    :root {
+        --list-scroll-max-height: 58dvh;
+    }
+
     body {
         align-items: flex-start;
     }
@@ -17,6 +21,10 @@
 }
 
 @media (max-width: 560px) {
+    :root {
+        --list-scroll-max-height: 62dvh;
+    }
+
     .workspace-bar {
         align-items: stretch;
         flex-direction: column;
