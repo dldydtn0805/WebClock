@@ -90,16 +90,24 @@ export function createMusicFeature({ state, saveState, elements }) {
     let hasPendingReorder = false;
     let dragProxy = null;
     let isReorderEnabled = true;
+    let isTouchReorderMode = false;
     let activeConfirmResolver = null;
     let confirmTriggerElement = null;
 
     function getIsReorderEnabled() {
-        const isNarrowViewport = window.matchMedia?.('(max-width: 920px)').matches ?? false;
+        const supportsPointerEvents = typeof window.PointerEvent === 'function';
+        const supportsTouchEvents = 'ontouchstart' in window
+            || (typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 0);
+
+        return supportsPointerEvents || supportsTouchEvents;
+    }
+
+    function getIsTouchReorderMode() {
         const hasCoarsePointer = window.matchMedia?.('(pointer: coarse)').matches ?? false;
         const hasNoHover = window.matchMedia?.('(hover: none)').matches ?? false;
         const hasTouchPoints = typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 0;
 
-        return !(isNarrowViewport && (hasCoarsePointer || hasNoHover || hasTouchPoints));
+        return hasCoarsePointer || hasNoHover || hasTouchPoints;
     }
 
     function formatPlaybackTime(totalSeconds) {
@@ -532,7 +540,21 @@ export function createMusicFeature({ state, saveState, elements }) {
         updateStatus('재생목록 순서를 바꿨어요.', { mirrorToTicker: false });
     }
 
-    function bindPointerReorder(item, trackId) {
+    function bindPointerReorder(item, trackId, { handleOnly = false } = {}) {
+        function findTouchById(touchList, identifier) {
+            if (!touchList) {
+                return null;
+            }
+
+            for (const touch of touchList) {
+                if (touch.identifier === identifier) {
+                    return touch;
+                }
+            }
+
+            return null;
+        }
+
         function handlePointerMove(event) {
             if (!pointerDragSession || pointerDragSession.pointerId !== event.pointerId) {
                 return;
@@ -573,6 +595,11 @@ export function createMusicFeature({ state, saveState, elements }) {
             const { isDragging } = pointerDragSession;
             pointerDragSession = null;
 
+            try {
+                item.releasePointerCapture?.(event.pointerId);
+            } catch (error) {
+                /* 포인터 캡처가 없더라도 종료 흐름은 그대로 진행합니다. */
+            }
             window.removeEventListener('pointermove', handlePointerMove);
             window.removeEventListener('pointerup', finishPointerReorder);
             window.removeEventListener('pointercancel', finishPointerReorder);
@@ -585,38 +612,147 @@ export function createMusicFeature({ state, saveState, elements }) {
             clearDragState();
         }
 
-        item.addEventListener('pointerdown', (event) => {
-            if (event.button !== 0) {
+        function startReorderSession(clientX, clientY, sessionPatch = {}) {
+            pointerDragSession = {
+                startX: clientX,
+                startY: clientY,
+                trackId,
+                ...sessionPatch
+            };
+            draggedTrackId = trackId;
+            hasPendingReorder = false;
+        }
+
+        function shouldIgnoreDragStart(target) {
+            if (target instanceof HTMLElement && target.closest('button')) {
+                return true;
+            }
+
+            if (
+                handleOnly
+                && (!(target instanceof HTMLElement) || !target.closest('.music-library-handle'))
+            ) {
+                return true;
+            }
+
+            return false;
+        }
+
+        if (typeof window.PointerEvent === 'function') {
+            item.addEventListener('pointerdown', (event) => {
+                if (event.pointerType === 'mouse' && event.button !== 0) {
+                    return;
+                }
+
+                if (shouldIgnoreDragStart(event.target)) {
+                    return;
+                }
+
+                event.preventDefault();
+                startReorderSession(event.clientX, event.clientY, { pointerId: event.pointerId });
+
+                try {
+                    item.setPointerCapture?.(event.pointerId);
+                } catch (error) {
+                    /* 브라우저가 포인터 캡처를 거부해도 드래그는 계속 진행합니다. */
+                }
+                window.addEventListener('pointermove', handlePointerMove, { passive: false });
+                window.addEventListener('pointerup', finishPointerReorder);
+                window.addEventListener('pointercancel', finishPointerReorder);
+            });
+
+            return;
+        }
+
+        function handleTouchMove(event) {
+            if (!pointerDragSession) {
                 return;
             }
 
-            if (event.target instanceof HTMLElement && event.target.closest('button')) {
+            const activeTouch = findTouchById(event.touches, pointerDragSession.touchId);
+
+            if (!activeTouch) {
+                return;
+            }
+
+            const deltaX = activeTouch.clientX - pointerDragSession.startX;
+            const deltaY = activeTouch.clientY - pointerDragSession.startY;
+
+            if (!pointerDragSession.isDragging && Math.hypot(deltaX, deltaY) < 10) {
                 return;
             }
 
             event.preventDefault();
-            pointerDragSession = {
-                pointerId: event.pointerId,
-                startX: event.clientX,
-                startY: event.clientY,
-                trackId
-            };
-            draggedTrackId = trackId;
-            hasPendingReorder = false;
-            window.addEventListener('pointermove', handlePointerMove, { passive: false });
-            window.addEventListener('pointerup', finishPointerReorder);
-            window.addEventListener('pointercancel', finishPointerReorder);
+
+            if (!pointerDragSession.isDragging) {
+                pointerDragSession.isDragging = true;
+                item.classList.add('is-drag-origin');
+                createDragProxy(item, activeTouch);
+            }
+
+            updateDragProxyPosition(activeTouch.clientX, activeTouch.clientY);
+
+            const { targetItem, placement } = findDropTarget(activeTouch.clientY);
+
+            if (!targetItem || targetItem.dataset.trackId === trackId) {
+                clearDropTarget();
+                return;
+            }
+
+            reorderLibraryItem(targetItem, placement);
+        }
+
+        function finishTouchReorder(event) {
+            if (!pointerDragSession) {
+                return;
+            }
+
+            const endedTouch = findTouchById(event.changedTouches, pointerDragSession.touchId);
+
+            if (!endedTouch) {
+                return;
+            }
+
+            const { isDragging } = pointerDragSession;
+            pointerDragSession = null;
+
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', finishTouchReorder);
+            window.removeEventListener('touchcancel', finishTouchReorder);
+
+            if (isDragging && hasPendingReorder) {
+                commitLibraryOrder();
+                return;
+            }
+
+            clearDragState();
+        }
+
+        item.addEventListener('touchstart', (event) => {
+            const [touch] = event.changedTouches;
+
+            if (!touch || shouldIgnoreDragStart(event.target)) {
+                return;
+            }
+
+            event.preventDefault();
+            startReorderSession(touch.clientX, touch.clientY, { touchId: touch.identifier });
+            window.addEventListener('touchmove', handleTouchMove, { passive: false });
+            window.addEventListener('touchend', finishTouchReorder);
+            window.addEventListener('touchcancel', finishTouchReorder);
         });
     }
 
     function renderLibrary() {
         isReorderEnabled = getIsReorderEnabled();
+        isTouchReorderMode = isReorderEnabled && getIsTouchReorderMode();
         elements.musicLibraryList.dataset.reorderEnabled = String(isReorderEnabled);
+        elements.musicLibraryList.dataset.reorderMode = isTouchReorderMode ? 'touch' : 'pointer';
         elements.musicLibraryList.innerHTML = '';
 
         state.music.tracks.forEach((track) => {
             const item = document.createElement('li');
-            item.className = `music-library-item${track.id === state.music.activeTrackId ? ' active' : ''}${isReorderEnabled ? '' : ' is-reorder-disabled'}`;
+            item.className = `music-library-item${track.id === state.music.activeTrackId ? ' active' : ''}${isReorderEnabled ? '' : ' is-reorder-disabled'}${isTouchReorderMode ? ' is-touch-reorder' : ''}`;
             item.draggable = false;
             item.dataset.trackId = track.id;
 
@@ -625,8 +761,10 @@ export function createMusicFeature({ state, saveState, elements }) {
             handle.setAttribute('aria-hidden', 'true');
             handle.hidden = !isReorderEnabled;
             handle.title = isReorderEnabled
-                ? '드래그해서 순서를 바꿀 수 있어요'
-                : '모바일에서는 드래그 정렬이 꺼져 있어요';
+                ? (isTouchReorderMode
+                    ? '이 핸들을 드래그해서 순서를 바꿀 수 있어요'
+                    : '드래그해서 순서를 바꿀 수 있어요')
+                : '이 브라우저에서는 드래그 정렬을 지원하지 않아요';
             handle.draggable = false;
 
             const thumbnail = document.createElement('img');
@@ -674,7 +812,7 @@ export function createMusicFeature({ state, saveState, elements }) {
             });
 
             if (isReorderEnabled) {
-                bindPointerReorder(item, track.id);
+                bindPointerReorder(item, track.id, { handleOnly: isTouchReorderMode });
             }
             actions.append(playButton, deleteButton);
             item.append(handle, thumbnail, info, actions);

@@ -41,11 +41,18 @@ Vercel에서는 `Environment Variables`에 넣은 값도 같은 스크립트가 
 ## Run
 
 ```bash
-npm run sync-env
-open index.html
+npm run dev
 ```
 
-또는 Live Server 같은 정적 서버로 실행해도 됩니다.
+기본 포트는 `3000`이고, `http://localhost:3000`에서 확인할 수 있습니다.
+이미 사용 중이면 `PORT=3001 npm run dev`처럼 다른 포트로 실행하면 됩니다.
+
+직접 정적 서버를 띄우고 싶다면 아래처럼 실행해도 됩니다.
+
+```bash
+npm run sync-env
+python3 -m http.server 3000
+```
 
 ## Vercel
 

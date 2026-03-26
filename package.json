@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "npm run sync-env && python3 -m http.server ${PORT:-3000}",
     "build": "npm run sync-env && node scripts/build-static.mjs",
     "sync-env": "node scripts/generate-runtime-config.mjs",
     "prepare": "npm run sync-env",
