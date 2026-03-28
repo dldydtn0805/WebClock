@@ -14,6 +14,7 @@ export function getAppElements() {
         confirmDialogConfirmButton: document.querySelector('.confirm-dialog-confirm'),
         workspaceCodeDisplay: document.querySelector('.workspace-code-display'),
         workspaceStatus: document.querySelector('.workspace-status'),
+        themeToggleButton: document.querySelector('.theme-toggle-btn'),
         workspaceResetButton: document.querySelector('.workspace-reset-btn'),
         workspaceLiveChip: document.querySelector('.workspace-live-chip'),
         time: document.querySelector('.pixel-time'),

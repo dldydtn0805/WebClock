@@ -103,8 +103,12 @@ export function createMusicFeature({ state, saveState, elements }) {
     }
 
     function getIsTouchReorderMode() {
-        const hasCoarsePointer = window.matchMedia?.('(pointer: coarse)').matches ?? false;
-        const hasNoHover = window.matchMedia?.('(hover: none)').matches ?? false;
+        const hasCoarsePointer = window.matchMedia
+            ? window.matchMedia('(pointer: coarse)').matches
+            : false;
+        const hasNoHover = window.matchMedia
+            ? window.matchMedia('(hover: none)').matches
+            : false;
         const hasTouchPoints = typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 0;
 
         return hasCoarsePointer || hasNoHover || hasTouchPoints;

@@ -91,6 +91,14 @@ body.is-workspace-locked .page-shell {
     gap: 16px;
 }
 
+.workspace-bar-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
 .desk-app {
     width: 100%;
     margin: 0 auto;

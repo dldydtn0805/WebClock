@@ -386,34 +386,21 @@
 }
 
 body.night-mode .clock-panel {
-    background:
-        radial-gradient(circle at top, rgba(41, 151, 255, 0.12), transparent 58%),
-        linear-gradient(180deg, rgba(20, 22, 27, 0.92), rgba(12, 13, 17, 0.86));
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.05),
-        0 28px 64px rgba(0, 0, 0, 0.34);
+    background: #161c24;
+    border-color: rgba(148, 163, 184, 0.16);
+    box-shadow: 0 18px 32px rgba(0, 0, 0, 0.2);
 }
 
 body.night-mode .clock-shell {
-    border-color: rgba(255, 255, 255, 0.06);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
-        linear-gradient(180deg, rgba(10, 12, 16, 0.94), rgba(24, 27, 34, 0.78));
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        inset 0 -18px 32px rgba(0, 0, 0, 0.22),
-        0 18px 42px rgba(0, 0, 0, 0.3);
+    border-color: rgba(148, 163, 184, 0.14);
+    background: #1a212b;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 body.night-mode .clock-screen {
-    background:
-        radial-gradient(circle at top right, rgba(41, 151, 255, 0.18), transparent 34%),
-        linear-gradient(180deg, rgba(24, 27, 34, 0.96), rgba(12, 14, 19, 0.9));
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        inset 0 -18px 30px rgba(0, 0, 0, 0.24);
+    background: #141a22;
+    border-color: rgba(148, 163, 184, 0.14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 body.night-mode .status-dot {
@@ -428,8 +415,8 @@ body.night-mode .pixel-date {
 }
 
 body.night-mode .pixel-time {
-    color: #f5f5f7;
-    text-shadow: 0 0 24px rgba(255, 255, 255, 0.08);
+    color: #f3f7fd;
+    text-shadow: none;
 }
 
 body.night-mode .clock-footer {
@@ -441,9 +428,16 @@ body.night-mode .clock-marquee-text {
 }
 
 body.night-mode .btn {
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.18),
-        0 6px 18px rgba(0, 0, 0, 0.28);
+    box-shadow: none;
+}
+
+body.night-mode .workspace-gate,
+body.night-mode .confirm-dialog {
+    background: rgba(3, 7, 13, 0.68);
+}
+
+body.night-mode .card {
+    box-shadow: var(--shadow-soft);
 }
 
 .card {
@@ -481,6 +475,15 @@ body.night-mode .btn {
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.04em;
+}
+
+.theme-toggle-btn[aria-pressed="true"] {
+    background: rgba(0, 113, 227, 0.1);
+    border-color: rgba(0, 113, 227, 0.16);
+    color: var(--accent);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.78),
+        0 10px 22px rgba(0, 113, 227, 0.08);
 }
 
 .music-form {
@@ -1001,6 +1004,47 @@ body.night-mode .btn {
     opacity: 1;
 }
 
+body.night-mode .music-card {
+    background: #161c24;
+    border-color: rgba(148, 163, 184, 0.16);
+}
+
+body.night-mode .music-badge,
+body.night-mode .theme-toggle-btn[aria-pressed="true"] {
+    background: rgba(124, 198, 255, 0.12);
+    border-color: rgba(124, 198, 255, 0.16);
+    color: #a6ddff;
+}
+
+body.night-mode .music-preview,
+body.night-mode .music-actions,
+body.night-mode .clock-weather-card {
+    background: #1a212b;
+    border-color: rgba(148, 163, 184, 0.14);
+    box-shadow: none;
+}
+
+body.night-mode .music-library-item {
+    background: var(--input-bg);
+}
+
+body.night-mode .music-library-item.active {
+    border-color: rgba(124, 198, 255, 0.26);
+    box-shadow:
+        inset 0 0 0 1px rgba(124, 198, 255, 0.12),
+        0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+body.night-mode .music-library-handle {
+    background:
+        radial-gradient(circle, rgba(154, 167, 184, 0.48) 1.3px, transparent 1.6px) center / 8px 8px repeat-y,
+        #1f2630;
+}
+
+body.night-mode .music-library-btn.is-play-btn::after {
+    color: var(--text);
+}
+
 .music-library-empty {
     margin: 14px 0 0;
     color: var(--muted);
@@ -1066,6 +1110,24 @@ textarea:focus,
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.64),
         0 10px 22px rgba(15, 23, 42, 0.05);
+}
+
+body.night-mode .focus-input,
+body.night-mode textarea,
+body.night-mode .workspace-code-input,
+body.night-mode .music-url-input,
+body.night-mode .music-library-item,
+body.night-mode .music-library-handle {
+    border-color: rgba(148, 163, 184, 0.14);
+    box-shadow: none;
+}
+
+body.night-mode .focus-input:focus,
+body.night-mode textarea:focus,
+body.night-mode .workspace-code-input:focus,
+body.night-mode .music-url-input:focus {
+    border-color: rgba(124, 198, 255, 0.42);
+    box-shadow: 0 0 0 4px rgba(124, 198, 255, 0.12);
 }
 
 .clock-weather-card {
@@ -1173,6 +1235,74 @@ textarea:focus,
     transform: translateY(-1px);
 }
 
+body.night-mode .timer-btn,
+body.night-mode .music-form button,
+body.night-mode .music-library-btn,
+body.night-mode .music-actions .music-control-btn,
+body.night-mode .music-actions .music-control-btn.primary,
+body.night-mode .music-actions .music-control-btn.ghost {
+    background: rgba(18, 25, 35, 0.9);
+    border-color: rgba(148, 163, 184, 0.14);
+    color: var(--text);
+    box-shadow: none;
+}
+
+body.night-mode .timer-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0b1219;
+    box-shadow: none;
+}
+
+body.night-mode .timer-btn.is-danger {
+    background: #ba5c63;
+    border-color: #ba5c63;
+    color: #fff8f8;
+}
+
+body.night-mode .timer-btn.ghost {
+    background: rgba(18, 25, 35, 0.72);
+}
+
+body.night-mode .timer-btn:hover,
+body.night-mode .music-form button:hover,
+body.night-mode .music-library-btn:hover,
+body.night-mode .music-actions .music-control-btn:hover,
+body.night-mode .music-actions .music-control-btn.primary:hover,
+body.night-mode .music-actions .music-control-btn.ghost:hover {
+    background: rgba(26, 35, 48, 0.96);
+    border-color: rgba(124, 198, 255, 0.18);
+    color: var(--text);
+}
+
+body.night-mode .music-form button {
+    background: rgba(124, 198, 255, 0.14);
+    border-color: rgba(124, 198, 255, 0.22);
+    color: #dff2ff;
+}
+
+body.night-mode .music-form button:hover,
+body.night-mode .workspace-gate-actions .timer-btn.primary:hover {
+    background: rgba(124, 198, 255, 0.22);
+    border-color: rgba(124, 198, 255, 0.3);
+    color: #f8fcff;
+}
+
+body.night-mode .music-control-loop.is-active,
+body.night-mode .music-actions .music-control-loop.is-active {
+    background: rgba(124, 198, 255, 0.14);
+    border-color: rgba(124, 198, 255, 0.22);
+    color: #dff2ff;
+    box-shadow: inset 0 0 0 1px rgba(124, 198, 255, 0.08);
+}
+
+body.night-mode .music-control-loop.is-active:hover,
+body.night-mode .music-actions .music-control-loop.is-active:hover {
+    background: rgba(124, 198, 255, 0.2);
+    border-color: rgba(124, 198, 255, 0.28);
+    color: #f8fcff;
+}
+
 .confirm-dialog-actions .timer-btn {
     transition:
         background-color 160ms ease,
@@ -1202,6 +1332,15 @@ textarea:focus,
     color: var(--text);
 }
 
+body.night-mode .workspace-reset-btn:hover,
+body.night-mode .workspace-gate-actions .timer-btn.ghost:hover,
+body.night-mode .weather-refresh-btn:hover,
+body.night-mode .confirm-dialog-actions .timer-btn.ghost:hover {
+    background: rgba(26, 35, 48, 0.96);
+    border-color: rgba(124, 198, 255, 0.18);
+    color: var(--text);
+}
+
 .workspace-gate-actions .timer-btn.primary:hover {
     background: var(--accent-deep);
     border-color: var(--accent-deep);
@@ -1228,6 +1367,10 @@ textarea:focus,
 .music-library-list::-webkit-scrollbar-thumb {
     background: rgba(110, 110, 115, 0.38);
     border-radius: 999px;
+}
+
+body.night-mode .music-library-list::-webkit-scrollbar-thumb {
+    background: rgba(154, 167, 184, 0.28);
 }
 
 .music-library-list::-webkit-scrollbar-track {

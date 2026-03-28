@@ -44,7 +44,6 @@ export function updateClock(elements) {
         );
     }
 
-    elements.body.classList.remove('night-mode');
 }
 
 export function startClock(elements) {

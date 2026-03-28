@@ -44,6 +44,14 @@
         width: 100%;
     }
 
+    .workspace-bar-actions {
+        width: 100%;
+    }
+
+    .workspace-bar-actions .timer-btn {
+        flex: 1 1 0;
+    }
+
     .app-panel {
         padding: 20px;
         border-radius: 26px;

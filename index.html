@@ -6,10 +6,32 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="icon" href="favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="stylesheet" href="src/styles/main.css?v=20260326-65">
+    <link rel="stylesheet" href="src/styles/main.css?v=20260329-70">
     <title>Web Clock Studio</title>
 </head>
 <body>
+    <script>
+        (() => {
+            const prefersDark = window.matchMedia
+                ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                : false;
+
+            try {
+                const saved = JSON.parse(localStorage.getItem('desk-clock-planner-state') || 'null');
+                const theme = saved?.theme === 'light' || saved?.theme === 'dark'
+                    ? saved.theme
+                    : (prefersDark ? 'dark' : 'light');
+
+                if (theme === 'dark') {
+                    document.body.classList.add('night-mode');
+                }
+            } catch (error) {
+                if (prefersDark) {
+                    document.body.classList.add('night-mode');
+                }
+            }
+        })();
+    </script>
     <div class="workspace-gate" hidden>
         <form class="workspace-gate-form card" novalidate>
             <p class="card-label">Shared Workspace</p>
@@ -58,7 +80,17 @@
                 <h2 class="workspace-code-display">로컬 모드</h2>
                 <p class="workspace-status" data-state="local">바로 사용 가능. 로그인하면 동기화됩니다.</p>
             </div>
-            <button type="button" class="timer-btn ghost workspace-reset-btn">로그인</button>
+            <div class="workspace-bar-actions">
+                <button
+                    type="button"
+                    class="timer-btn ghost theme-toggle-btn"
+                    aria-pressed="false"
+                    title="다크 모드로 전환"
+                >
+                    다크 모드
+                </button>
+                <button type="button" class="timer-btn ghost workspace-reset-btn">로그인</button>
+            </div>
         </section>
         <main class="desk-app">
             <section class="app-panel clock-panel">
@@ -222,6 +254,6 @@
             tableName: 'shared_workspaces'
         };
     </script>
-    <script type="module" src="src/js/app.js?v=20260326-68"></script>
+    <script type="module" src="src/js/app.js?v=20260329-70"></script>
 </body>
 </html>

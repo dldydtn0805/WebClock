@@ -12,8 +12,27 @@ export function createDefaultMusic() {
     };
 }
 
+function getSystemThemePreference() {
+    if (
+        typeof window !== 'undefined'
+        && window.matchMedia
+        && window.matchMedia('(prefers-color-scheme: dark)').matches
+    ) {
+        return 'dark';
+    }
+
+    return 'light';
+}
+
+function normalizeTheme(rawTheme, fallbackTheme = getSystemThemePreference()) {
+    return rawTheme === 'dark' || rawTheme === 'light'
+        ? rawTheme
+        : fallbackTheme;
+}
+
 export function createDefaultState() {
     return {
+        theme: getSystemThemePreference(),
         weather: '',
         weatherCode: null,
         weatherTemperature: null,
@@ -66,6 +85,7 @@ function normalizeState(saved) {
     const defaultState = createDefaultState();
 
     return {
+        theme: normalizeTheme(saved?.theme, defaultState.theme),
         weather: typeof saved?.weather === 'string' ? saved.weather : defaultState.weather,
         weatherCode: Number.isInteger(saved?.weatherCode) ? saved.weatherCode : defaultState.weatherCode,
         weatherTemperature: Number.isFinite(saved?.weatherTemperature)
